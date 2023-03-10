@@ -13,6 +13,6 @@ void Application::Run()
 {
 	// Setting up spdlog level, spdlog::trace() will only print when in debug configuration, other log functions will work in all configurations
 	SPD_DEBUG_LEVEL(spdlog::set_level(spdlog::level::trace));
-	spdlog::trace("DEBUG POG");
-	spdlog::info("smelly");
+
+
 }
