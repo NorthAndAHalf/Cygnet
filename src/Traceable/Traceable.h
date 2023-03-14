@@ -11,7 +11,7 @@ public:
 	Traceable();
 	~Traceable();
 
-	glm::vec3 Trace(Ray& ray);
+	RayHit Trace(Ray& ray, uint8_t depth);
 	float Intersect(Ray& ray);
 	float Intersect(Ray& ray, glm::vec3& colour);
 

@@ -29,10 +29,11 @@ void Application::Run()
 
 	// I want to use smart pointers instead of these raw pointers everywhere
 	// But idk how tf that works with inheritance
-	//Sphere* sphere = new Sphere(glm::vec3(0.0f, 0.0f, -2.0f), 0.5f);
-	Triangle* sphere = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(0.0f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f));	
+	Sphere* sphere = new Sphere(glm::vec3(1.0f, 0.0f, -2.0f), 0.3f);
+	Triangle* triangle = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(0.0f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f));	
 	Traceable model = Traceable();
 	model.AddPrimitive(sphere);
+	model.AddPrimitive(triangle);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
 
@@ -53,7 +54,8 @@ void Application::Run()
 			// Maybe store a list of pointer primitives?
 			// Or more likely make another hit point class but this time have them only able to store actual geometry hits
 
-			glm::vec3 colour = model.Trace(ray);
+			RayHit hit = model.Trace(ray, 0);
+			glm::vec3 colour = hit.surface;
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
 			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;
