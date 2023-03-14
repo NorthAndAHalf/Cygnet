@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "spdlog/spdlog.h"
 #include "Traceable/Sphere.h"
+#include "Traceable/Triangle.h"
 #include "Traceable/Traceable.h"
 #include "Ray.h"
 #include "glm/geometric.hpp"
@@ -28,7 +29,8 @@ void Application::Run()
 
 	// I want to use smart pointers instead of these raw pointers everywhere
 	// But idk how tf that works with inheritance
-	Sphere* sphere = new Sphere(glm::vec3(0.0f, 0.0f, -2.0f), 0.5f);
+	//Sphere* sphere = new Sphere(glm::vec3(0.0f, 0.0f, -2.0f), 0.5f);
+	Triangle* sphere = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(0.0f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f));	
 	Traceable model = Traceable();
 	model.AddPrimitive(sphere);
 
