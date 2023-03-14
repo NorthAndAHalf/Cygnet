@@ -89,7 +89,7 @@ workspace "Cygnet"                   -- Solution Name
       SourceDir, -- include root source directory to allow for absolute include paths
       -- include the headers of any libraries/dlls you need
       "vendor/glm",
-      "vendor/stbimage",
+      "vendor/stb",
       "vendor/spdlog/include"
     }
 
@@ -101,7 +101,7 @@ workspace "Cygnet"                   -- Solution Name
     {
       -- add dependency directories here
       "vendor/glm",
-      "vendor/stbimage",
+      "vendor/stb",
       "vendor/spdlog"
     }
 

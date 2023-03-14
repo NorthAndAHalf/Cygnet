@@ -8,13 +8,17 @@
 class Traceable
 {
 public:
-	
+	Traceable();
+	~Traceable();
+
 	glm::vec3 Trace(Ray& ray);
 	float Intersect(Ray& ray);
 	float Intersect(Ray& ray, glm::vec3& colour);
 
+	void AddPrimitive(Primitive* p);
+
 private:
-	std::unique_ptr<std::vector<std::shared_ptr<Primitive>>> primitives; // Unique pointer of vector that stores shared pointers of Primitives
+	std::vector<Primitive*>* primitives; 
 
 	/*
 	Will require an acceleration structure to be stored here in the future

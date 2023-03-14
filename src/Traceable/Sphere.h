@@ -1,7 +1,7 @@
 #pragma once
 #include "Primitive.h"
 
-class Sphere : Primitive
+class Sphere : public Primitive
 {
 public:
 	Sphere(glm::vec3 _origin, float _radius);
