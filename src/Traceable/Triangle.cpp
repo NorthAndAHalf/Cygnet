@@ -18,6 +18,7 @@ RayHit Triangle::Trace(Ray& ray, uint8_t depth)
 
 	glm::vec3 colour = (surfaceContribution * reflectedContribution);
 	RayHit output = RayHit(ray.At(t), ray.direction, normal, colour, 0.0f, t, depth);
+	return output;
 }
 
 float Triangle::Intersect(Ray& ray, glm::vec3& normal)
