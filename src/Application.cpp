@@ -29,11 +29,13 @@ void Application::Run()
 
 	// I want to use smart pointers instead of these raw pointers everywhere
 	// But idk how tf that works with inheritance
+	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
 	Sphere* sphere = new Sphere(glm::vec3(1.0f, 0.0f, -2.0f), 0.3f);
 	Triangle* triangle = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(0.0f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f));	
 	Traceable model = Traceable();
-	model.AddPrimitive(sphere);
 	model.AddPrimitive(triangle);
+	model.AddPrimitive(sphere);
+	traceables->push_back(&model);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
 
@@ -42,19 +44,21 @@ void Application::Run()
 	{
 		for (int x = 0; x < width; x++)
 		{
+			//idk why but all the uint8_ts in the pixel array have a default value of 205
+			pixels[((x + (y * width)) * 3)] = 0;
+			pixels[((x + (y * width)) * 3) + 1] = 0;
+			pixels[((x + (y * width)) * 3) + 2] = 0;
 			glm::vec3 pixelCoord = glm::vec3(2 * (double)x / (double)width - 1, 2 * (double)y / (double)height - 1, -focalLength);
 			Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
+			std::vector<Traceable*> intersected = std::vector<Traceable*>();
 
-			// Will need to trace multiple models here
-			// Maybe a function that takes in an array of traceables, intersects them all, and returns a pointer to the one with
-			// the closest intersection
-			// Intersect function could sample the acceleration structure, then Trace() traces the primitives directly using the return t value?
-			// idk yet, might need to be restructured
-			// 
-			// Maybe store a list of pointer primitives?
-			// Or more likely make another hit point class but this time have them only able to store actual geometry hits
+			RayHit hit;
+			IntersectTraceables(ray, *traceables, intersected);
 
-			RayHit hit = model.Trace(ray, 0);
+			// Next step, traverse the acceleration structure of each intsersected traceable
+
+			if (!intersected.empty()) hit = intersected.at(0)->Trace(ray, *traceables, 0);
+			else hit = RayHit();
 			glm::vec3 colour = hit.surface;
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;

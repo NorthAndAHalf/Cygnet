@@ -21,6 +21,18 @@ RayHit Sphere::Trace(Ray& ray, uint8_t depth)
     return output;
 }
 
+float Sphere::Intersect(Ray& ray)
+{
+    glm::vec3 oc = ray.origin - centre;
+    float b = glm::dot(oc, ray.direction);
+    float c = dot(oc, oc) - radius * radius;
+    float h = (b * b) - c; //spdlog::trace(c);
+    if (h < 0.0f) return -1.0f;
+    h = sqrt(h);
+    float t = -b - h;
+    return t;
+}
+
 float Sphere::Intersect(Ray& ray, glm::vec3& normal)
 {
     glm::vec3 oc = ray.origin - centre; 

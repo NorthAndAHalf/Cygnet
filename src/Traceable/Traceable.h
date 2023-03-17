@@ -11,9 +11,8 @@ public:
 	Traceable();
 	~Traceable();
 
-	RayHit Trace(Ray& ray, uint8_t depth);
+	RayHit Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth);
 	float Intersect(Ray& ray);
-	float Intersect(Ray& ray, glm::vec3& colour);
 
 	void AddPrimitive(Primitive* p);
 
@@ -27,3 +26,5 @@ private:
 	Idk yet though, maybe the structure will store indices for the primitive array instead
 	*/
 };
+
+void IntersectTraceables(Ray& ray, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output);

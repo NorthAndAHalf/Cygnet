@@ -10,7 +10,7 @@ Traceable::~Traceable()
     delete primitives;
 }
 
-RayHit Traceable::Trace(Ray& ray, uint8_t depth)
+RayHit Traceable::Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth)
 {
     // The acceleration structure for each traceable will be traced in this function
     std::vector<RayHit> hits;
@@ -21,7 +21,7 @@ RayHit Traceable::Trace(Ray& ray, uint8_t depth)
     }
 
     RayHit output;
-    for (RayHit h : hits)
+    for (const RayHit& h : hits)
     {
         if ((h.t < output.t && h.depth != -1) || output.depth == -1) output = h; // Hits with negative depth are misses (no intersection)
     }
@@ -31,27 +31,27 @@ RayHit Traceable::Trace(Ray& ray, uint8_t depth)
 
 float Traceable::Intersect(Ray& ray)
 {
-    // TODO: Return t value of closest intersection
+    // Temporary Implementation: This will be replaced with an intersection test of the bounding volume once they are implemented
+    float t = -1.0f;
     for (Primitive* p : *primitives)
     {
-        p->Trace(ray, 0);
+        float pt = p->Intersect(ray);
+        if (t < 0.0f && pt >= 0.0f) t = pt;
+        else if (t > 0.0f && pt < t && pt >= 0.0f) t = pt;
     }
-    return -1.0f;
-}
-
-float Traceable::Intersect(Ray& ray, glm::vec3& colour)
-{
-    // TODO: Return t value of closest intersection and output the colour of the intersection colour at the intersecion point
-    for (Primitive* p : *primitives)
-    {
-        p->Trace(ray, 0);
-    }
-
-    colour = glm::vec3(0.0f);
-    return -1.0f;
+    return t;
 }
 
 void Traceable::AddPrimitive(Primitive* p)
 {
     primitives->push_back(p);
+}
+
+void IntersectTraceables(Ray& ray, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output)
+{
+    for (Traceable* t : traceables)
+    {
+        float tt = t->Intersect(ray);
+        if (tt >= 0.0f) output.push_back(t);
+    }
 }
