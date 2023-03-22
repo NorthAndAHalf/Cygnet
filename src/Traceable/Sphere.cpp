@@ -12,12 +12,10 @@ RayHit Sphere::Trace(Ray& ray, uint8_t depth)
     glm::vec3 normal;
     float t = Intersect(ray, surfaceContribution, normal);
 
-    if (t < 0.0f) return RayHit(glm::vec3(0.0f), ray.direction, glm::vec3(0.0f), glm::vec3(0.0f), 0.0f, 0.0f, -1);
+    if (t < 0.0f) return RayHit(glm::vec3(0.0f), ray.direction, glm::vec3(0.0f), Material(glm::vec3(1.0f), 0.0f), -1.0f);
 
-    glm::vec3 reflectedContribution = glm::vec3(0.8f); // Temporary, just so I can get a sphere rendering atm
-
-    glm::vec3 colour = (surfaceContribution * reflectedContribution);
-    RayHit output = RayHit(ray.At(t), ray.direction, normal, colour, 0.0f, t, depth);
+    Material mat = Material(glm::vec3(1.0f), 0.0f);
+    RayHit output = RayHit(ray.At(t), ray.direction, normal, mat, t);
     return output;
 }
 

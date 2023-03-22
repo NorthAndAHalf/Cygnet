@@ -52,14 +52,17 @@ void Application::Run()
 			Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
 			std::vector<Traceable*> intersected = std::vector<Traceable*>();
 
-			RayHit hit;
+			RayHit* hit;
 			IntersectTraceables(ray, *traceables, intersected);
 
 			// Next step, traverse the acceleration structure of each intsersected traceable
 
-			if (!intersected.empty()) hit = intersected.at(0)->Trace(ray, *traceables, 0);
-			else hit = RayHit();
-			glm::vec3 colour = hit.surface;
+			if (!intersected.empty()) hit = &intersected.at(0)->Trace(ray, *traceables, 0);
+			else hit = nullptr;
+
+			glm::vec3 colour;
+			if (hit != nullptr) colour = hit->mat.albedo;
+			else colour = glm::vec3(0.0f);
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
 			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;

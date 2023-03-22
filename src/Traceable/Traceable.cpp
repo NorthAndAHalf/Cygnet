@@ -1,4 +1,5 @@
 #include "Traceable.h"
+#include "RayHit.h"
 
 Traceable::Traceable()
     : primitives(new std::vector<Primitive*>)
@@ -20,13 +21,23 @@ RayHit Traceable::Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t d
         hits.push_back(h); 
     }
 
-    RayHit output;
-    for (const RayHit& h : hits)
+    // Implement rendering equation here
+    // Returned light = emittedLight + Integrate(reflection * reflectedLight * cosTheta)
+    
+    // Probably need to rethink the RayHit class
+    // Rayhits should store the material, get returned from the primitive trace function, then the rendering equation evaluated here I guess
+    // Ray AABB hits should still work if the origin is inside the traceable's box but I guess we'll find out
+
+    RayHit* output;
+    output = &hits.front();
+
+    for (RayHit h : hits)
     {
-        if ((h.t < output.t && h.depth != -1) || output.depth == -1) output = h; // Hits with negative depth are misses (no intersection)
+        if (hits.size() !=0) 
+            if(h.t < output->t && h.t >= 0.0f) output = &h;
     }
 
-    return output;
+    return *output;
 }
 
 float Traceable::Intersect(Ray& ray)
