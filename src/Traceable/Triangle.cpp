@@ -12,10 +12,10 @@ RayHit Triangle::Trace(Ray& ray, uint8_t depth)
 	glm::vec3 normal;
 	float t = Intersect(ray, surfaceContribution, normal);
 
-	if (t < 0.0f) return RayHit(glm::vec3(0.0f), ray.direction, glm::vec3(0.0f), Material(glm::vec3(1.0f), 0.0f), -1.0f);
+	if (t < 0.0f) return RayHit(glm::vec3(0.0f), ray.direction, glm::vec3(0.0f), Material(glm::vec3(1.0f), 0.0f), -1.0f, glm::vec3(0.0f));
 
 	Material mat = Material(glm::vec3(1.0f), 0.0f);
-	RayHit output = RayHit(ray.At(t), ray.direction, normal, mat, t);
+	RayHit output = RayHit(ray.At(t), ray.direction, normal, mat, t, glm::vec3(0.0f));
 	return output;
 }
 

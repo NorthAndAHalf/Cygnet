@@ -57,7 +57,7 @@ void Application::Run()
 
 			// Next step, traverse the acceleration structure of each intsersected traceable
 
-			if (!intersected.empty()) hit = &intersected.at(0)->Trace(ray, *traceables, 0);
+			if (!intersected.empty()) hit = &intersected.at(0)->Trace(ray, *traceables, 0, 3);
 			else hit = nullptr;
 
 			glm::vec3 colour;

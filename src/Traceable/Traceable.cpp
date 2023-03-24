@@ -1,5 +1,6 @@
 #include "Traceable.h"
 #include "RayHit.h"
+#include "glm/gtc/random.hpp"
 
 Traceable::Traceable()
     : primitives(new std::vector<Primitive*>)
@@ -11,7 +12,7 @@ Traceable::~Traceable()
     delete primitives;
 }
 
-RayHit Traceable::Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth)
+RayHit Traceable::Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth, uint8_t limit) // Recursion depth is temporary until russian roulette is implemented
 {
     // The acceleration structure for each traceable will be traced in this function
     std::vector<RayHit> hits;
@@ -35,6 +36,21 @@ RayHit Traceable::Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t d
     {
         if (hits.size() !=0) 
             if(h.t < output->t && h.t >= 0.0f) output = &h;
+    }
+
+    int samples = 16;
+
+    glm::vec3 integratedLight = glm::vec3(0.0f);
+    std::vector<Traceable*> intersected = std::vector<Traceable*>();
+
+    for (int i = 0; i < samples; i++)
+    {
+        float theta = glm::radians(glm::linearRand(0.0f, 90.0f));
+        float phi = glm::radians(glm::linearRand(0.0f, 90.0f));
+
+        glm::vec3 unitDir = glm::vec3(glm::cos(phi) * glm::cos(theta), glm::sin(theta), glm::sin(phi) * glm::cos(theta));
+        // Next, use this unit dir to transform a vector from the normal
+
     }
 
     return *output;

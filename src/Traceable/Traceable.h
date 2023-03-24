@@ -11,7 +11,7 @@ public:
 	Traceable();
 	~Traceable();
 
-	RayHit Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth);
+	RayHit Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth, uint8_t limit);
 	float Intersect(Ray& ray);
 
 	void AddPrimitive(Primitive* p);
