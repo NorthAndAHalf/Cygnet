@@ -127,7 +127,6 @@ void Application::Run()
 	// Temporary loop to trace 1 perspective ray per pixel:
 	for (int y = 0; y < height; y++)
 	{
-		// Percentage counter
 		if((int)(((float)y/(float)height)*1000.0f)%100 == 0) spdlog::info(std::to_string((int)(((float)y / (float)height) * 100)) + "%");
 		for (int x = 0; x < width; x++)
 		{
