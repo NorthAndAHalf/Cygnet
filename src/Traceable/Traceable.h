@@ -11,10 +11,10 @@ public:
 	Traceable();
 	~Traceable();
 
-	RayHit Trace(Ray& ray, std::vector<Traceable*>& traceables, uint8_t depth, uint8_t limit);
-	float Intersect(Ray& ray);
+	RayHit Intersect(const Ray& ray);
 
 	void AddPrimitive(Primitive* p);
+	void ApplyMaterial(Material mat);
 
 private:
 	std::vector<Primitive*>* primitives; 
@@ -28,3 +28,5 @@ private:
 };
 
 void IntersectTraceables(Ray& ray, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output);
+void IntersectTraceables(Ray& ray, const Traceable* self, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output);
+Traceable* IntersectTraceables(Ray& ray, const Traceable* self, const std::vector<Traceable*>& traceables);

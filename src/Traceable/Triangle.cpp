@@ -6,20 +6,7 @@ Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 {
 }
 
-RayHit Triangle::Trace(Ray& ray, uint8_t depth)
-{
-	glm::vec3 surfaceContribution;
-	glm::vec3 normal;
-	float t = Intersect(ray, surfaceContribution, normal);
-
-	if (t < 0.0f) return RayHit(glm::vec3(0.0f), ray.direction, glm::vec3(0.0f), Material(glm::vec3(1.0f), 0.0f), -1.0f, glm::vec3(0.0f));
-
-	Material mat = Material(glm::vec3(1.0f), 0.0f);
-	RayHit output = RayHit(ray.At(t), ray.direction, normal, mat, t, glm::vec3(0.0f));
-	return output;
-}
-
-float Triangle::Intersect(Ray& ray)
+RayHit Triangle::Intersect(const Ray& ray)
 {
 	glm::vec3 p2p1 = P2 - P1;
 	glm::vec3 p3p1 = P3 - P1;
@@ -31,31 +18,17 @@ float Triangle::Intersect(Ray& ray)
 	float u = d * glm::dot(-q, p3p1);
 	float v = d * glm::dot(q, p2p1);
 	float t = d * glm::dot(-n, rop1);
-	if (u < 0.0f || v < 0.0f || (u + v) > 1.0f || t < 0.0f) t = -1.0f;
-	return t;
+
+	// During test the normal was inverted, I think it's something to do with winding order but for now I'm just inverting it
+	// Might just keep this if nothing breaks
+	glm::vec3 normal = -n;
+	if (u < 0.0f || v < 0.0f || (u + v) > 1.0f || t <= 0.0f) t = -1.0f;
+	if (t <= 0.0f) return RayHit();
+	return RayHit(ray, ray.At(t), normal, mat, t);
 }
 
-float Triangle::Intersect(Ray& ray, glm::vec3& normal)
+void Triangle::ApplyMaterial(Material _mat)
 {
-	glm::vec3 p2p1 = P2 - P1;
-	glm::vec3 p3p1 = P3 - P1;
-	glm::vec3 rop1 = ray.origin - P1;
-
-	glm::vec3 n = glm::cross(p2p1, p3p1);
-	glm::vec3 q = cross(rop1, ray.direction);
-	float d = 1.0f / glm::dot(ray.direction, n);
-	float u = d * glm::dot(-q, p3p1);
-	float v = d * glm::dot( q, p2p1);
-	float t = d * glm::dot(-n, rop1);
-	if (u < 0.0f || v < 0.0f || (u + v) > 1.0f || t < 0.0f) t = -1.0f;
-	return t;
-}
-
-float Triangle::Intersect(Ray& ray, glm::vec3& colour, glm::vec3& normal)
-{
-	float t = Intersect(ray, normal);
-	if (t < 0.0f) colour = glm::vec3(0.0f);
-	else colour = glm::vec3(0.0f, 1.0f, 0.0f);
-	return t;
+	mat = _mat;
 }
 

@@ -4,6 +4,7 @@
 
 struct Material
 {
+	Material();
 	Material(glm::vec3 _albedo, float _emittedIntensity);
 
 	glm::vec3 albedo;

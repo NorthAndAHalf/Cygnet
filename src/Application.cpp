@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "spdlog/spdlog.h"
+#include "Trace.h"
 #include "Traceable/Sphere.h"
 #include "Traceable/Triangle.h"
 #include "Traceable/Traceable.h"
@@ -23,6 +24,8 @@ void Application::Run()
 	SPD_DEBUG_LEVEL(spdlog::set_level(spdlog::level::trace));
 	std::string path = "render.bmp";
 
+	spdlog::info("Starting");
+
 	const int width = 1000;
 	const int height = 1000;
 	float focalLength = 1.0f;
@@ -30,15 +33,97 @@ void Application::Run()
 	// I want to use smart pointers instead of these raw pointers everywhere
 	// But idk how tf that works with inheritance
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
-	Sphere* sphere = new Sphere(glm::vec3(1.0f, 0.0f, -2.0f), 0.3f);
-	Triangle* triangle = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(0.0f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f));	
+	/*Sphere* sphere = new Sphere(glm::vec3(0.5f, 0.0f, -1.5f), 0.3f);
+	Triangle* triangle = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(-0.5f, 0.5f, -2.0f), glm::vec3(0.5f,  0.5f, -2.0f));
+	Triangle* triangle2 = new Triangle(glm::vec3(0.5f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f), glm::vec3(-0.5f, -0.5f, -2.0f));
 	Traceable model = Traceable();
-	model.AddPrimitive(triangle);
 	model.AddPrimitive(sphere);
+	Traceable model2 = Traceable();
+	model2.AddPrimitive(triangle);
+	model2.AddPrimitive(triangle2);
+	model.ApplyMaterial(Material(glm::vec3(1.0f), 30.0f));
+	model2.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f));
 	traceables->push_back(&model);
+	traceables->push_back(&model2);*/
+
+	// BTEC Cornell Box
+
+	glm::vec3 centre = glm::vec3(0.0f, 0.0f, -2.0f);
+
+	glm::vec3 v1 = centre + glm::vec3(-1.0f, -1.0f,  1.0f);
+	glm::vec3 v2 = centre + glm::vec3(-1.0f,  1.0f,  1.0f);
+	glm::vec3 v3 = centre + glm::vec3(-1.0f,  1.0f, -1.0f);
+	glm::vec3 v4 = centre + glm::vec3(-1.0f, -1.0f, -1.0f);
+
+	glm::vec3 v5 = centre + glm::vec3( 1.0f, -1.0f,  1.0f);
+	glm::vec3 v6 = centre + glm::vec3( 1.0f,  1.0f,  1.0f);
+	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
+	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
+
+	// Floor
+	Triangle* floor1 = new Triangle(v1, v3, v7);
+	Triangle* floor2 = new Triangle(v7, v5, v1);
+	Traceable floor = Traceable();
+	floor.AddPrimitive(floor1);
+	floor.AddPrimitive(floor2);
+	floor.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	traceables->push_back(&floor);
+
+	// Left Wall
+	Triangle* wallL1 = new Triangle(v1, v2, v3);
+	Triangle* wallL2 = new Triangle(v3, v4, v1);
+	Traceable leftWall = Traceable();
+	leftWall.AddPrimitive(wallL1);
+	leftWall.AddPrimitive(wallL2);
+	leftWall.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f));
+	traceables->push_back(&leftWall);
+
+	// Right Wall
+	Triangle* wallR1 = new Triangle(v5, v6, v7);
+	Triangle* wallR2 = new Triangle(v7, v8, v5);
+	Traceable rightWall = Traceable();
+	rightWall.AddPrimitive(wallR1);
+	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
+	rightWall.AddPrimitive(wallR2);
+	traceables->push_back(&rightWall);
+
+	// Back Wall
+	Triangle* wallB1 = new Triangle(v4, v3, v7);
+	Triangle* wallB2 = new Triangle(v7, v6, v4);
+	Traceable backWall = Traceable();
+	backWall.AddPrimitive(wallB1);
+	backWall.AddPrimitive(wallB2);
+	backWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	traceables->push_back(&backWall);
+
+	// Ceiling
+	Triangle* ceil1 = new Triangle(v2, v3, v7);
+	Triangle* ceil2 = new Triangle(v7, v8, v2);
+	Traceable ceiling = Traceable();
+	ceiling.AddPrimitive(ceil1);
+	ceiling.AddPrimitive(ceil2);
+	ceiling.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	traceables->push_back(&ceiling);
+
+	// Light
+	Triangle* light1 = new Triangle(v2 + glm::vec3(0.75f, -0.01f, -0.75f), v2 + glm::vec3(0.75f, -0.01f, -1.25f), v2 + glm::vec3(1.25f, -0.01f, -1.25f));
+	Triangle* light2 = new Triangle(v2 + glm::vec3(1.25f, -0.01f, -1.25f), v2 + glm::vec3(1.25f, -0.01f, -0.75f), v2 + glm::vec3(0.75f, -0.01f, -0.75f));
+	Traceable light = Traceable();
+	light.AddPrimitive(light1);
+	light.AddPrimitive(light2);
+	light.ApplyMaterial(Material(glm::vec3(1.0f), 30.0f));
+	traceables->push_back(&light);
+
+	// Sphere
+	Sphere* sphere = new Sphere(centre, 0.5f);
+	Traceable sphereObj = Traceable();
+	sphereObj.AddPrimitive(sphere);
+	sphereObj.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	traceables->push_back(&sphereObj);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
 
+	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 	// Temporary loop to trace 1 perspective ray per pixel:
 	for (int y = 0; y < height; y++)
 	{
@@ -52,17 +137,9 @@ void Application::Run()
 			Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
 			std::vector<Traceable*> intersected = std::vector<Traceable*>();
 
-			RayHit* hit;
-			IntersectTraceables(ray, *traceables, intersected);
+			RayHit hit = IntersectTraceables(ray, *traceables);
 
-			// Next step, traverse the acceleration structure of each intsersected traceable
-
-			if (!intersected.empty()) hit = &intersected.at(0)->Trace(ray, *traceables, 0, 3);
-			else hit = nullptr;
-
-			glm::vec3 colour;
-			if (hit != nullptr) colour = hit->mat.albedo;
-			else colour = glm::vec3(0.0f);
+			glm::vec3 colour = Trace(hit, *traceables, 0, 3);
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
 			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;
