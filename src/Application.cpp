@@ -28,7 +28,7 @@ void Application::Run()
 
 	const int width = 500;
 	const int height = 500;
-	float focalLength = 1.0f;
+	float focalLength = 1.7f;
 
 	// I want to use smart pointers instead of these raw pointers everywhere
 	// But idk how tf that works with inheritance
@@ -61,7 +61,7 @@ void Application::Run()
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
 	// Floor
-	Triangle* floor1 = new Triangle(v1, v3, v8);
+	Triangle* floor1 = new Triangle(v1, v4, v8);
 	Triangle* floor2 = new Triangle(v8, v5, v1);
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
@@ -79,8 +79,8 @@ void Application::Run()
 	traceables->push_back(&leftWall);
 
 	// Right Wall
-	Triangle* wallR1 = new Triangle(v5, v6, v7);
-	Triangle* wallR2 = new Triangle(v7, v8, v5);
+	Triangle* wallR1 = new Triangle(v7, v6, v5);
+	Triangle* wallR2 = new Triangle(v5, v7, v8);
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
 	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
@@ -96,9 +96,19 @@ void Application::Run()
 	backWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
 	traceables->push_back(&backWall);
 
+	// Front Wall
+	Triangle* wallF1 = new Triangle(v6, v2, v1);
+	Triangle* wallF2 = new Triangle(v1, v5, v6);
+	Traceable frontWall = Traceable();
+	frontWall.AddPrimitive(wallF1);
+	frontWall.AddPrimitive(wallF2);
+	frontWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	frontWall.ignoreFirst = true;
+	traceables->push_back(&frontWall);
+
 	// Ceiling
-	Triangle* ceil1 = new Triangle(v2, v3, v7);
-	Triangle* ceil2 = new Triangle(v7, v6, v2);
+	Triangle* ceil1 = new Triangle(v7, v3, v2);
+	Triangle* ceil2 = new Triangle(v2, v6, v7);
 	Traceable ceiling = Traceable();
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
@@ -111,7 +121,7 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	light.ApplyMaterial(Material(glm::vec3(1.0f), 30.0f));
+	light.ApplyMaterial(Material(glm::vec3(1.0f), 25.0f));
 	traceables->push_back(&light);
 
 	// Sphere
@@ -139,9 +149,9 @@ void Application::Run()
 			Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
 			std::vector<Traceable*> intersected = std::vector<Traceable*>();
 
-			RayHit hit = IntersectTraceables(ray, *traceables);
+			RayHit hit = IntersectTraceablesIgnoreFirst(ray, *traceables);
 
-			glm::vec3 colour = Trace(hit, *traceables, 0, 2);
+			glm::vec3 colour = Trace(hit, *traceables, 0, 3);
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
 			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;

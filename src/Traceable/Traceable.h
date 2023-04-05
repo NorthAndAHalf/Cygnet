@@ -16,6 +16,8 @@ public:
 	void AddPrimitive(Primitive* p);
 	void ApplyMaterial(Material mat);
 
+	bool ignoreFirst = false;
+
 private:
 	std::vector<Primitive*>* primitives; 
 
@@ -27,6 +29,3 @@ private:
 	*/
 };
 
-void IntersectTraceables(Ray& ray, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output);
-void IntersectTraceables(Ray& ray, const Traceable* self, const std::vector<Traceable*>& traceables, std::vector<Traceable*>& output);
-Traceable* IntersectTraceables(Ray& ray, const Traceable* self, const std::vector<Traceable*>& traceables);

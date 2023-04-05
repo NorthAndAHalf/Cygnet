@@ -11,7 +11,8 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
     if (hitPoint.t == -1.0f)
         return glm::vec3(0.0f);
 
-    int samples = 16;
+    // Temporary optimisation before I implement the actual way of doing this
+    int samples = 16/depth;
 
     glm::vec3 integration = glm::vec3(0.0f);
 
@@ -49,6 +50,38 @@ RayHit IntersectTraceables(const Ray& ray, const std::vector<Traceable*>& tracea
 
     for (Traceable* t : traceables)
         hits.push_back(t->Intersect(ray));
+
+    RayHit closest = RayHit();
+    for (RayHit h : hits)
+    {
+        if (h.t == -1.0f)
+            continue;
+        if (closest.t == -1.0f)
+        {
+            closest = h;
+            continue;
+        }
+        if (h.t < closest.t)
+        {
+            closest = h;
+        }
+    }
+    return closest;
+}
+
+RayHit IntersectTraceablesIgnoreFirst(const Ray& ray, const std::vector<Traceable*>& traceables)
+{
+    // Traverse the BVH of each traceable to find primitive intersections if there are any
+    // Once BVHs are implemented
+    std::vector<RayHit> hits;
+
+    for (Traceable* t : traceables)
+    {
+        if (t->ignoreFirst)
+            continue;
+        hits.push_back(t->Intersect(ray));
+    }
+
 
     RayHit closest = RayHit();
     for (RayHit h : hits)

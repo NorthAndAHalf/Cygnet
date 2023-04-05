@@ -16,7 +16,7 @@ RayHit Sphere::Intersect(const Ray& ray)
     h = sqrt(h);
     float t = -b - h;
     if (t <= 0.0f) return RayHit();
-    return RayHit(ray, ray.At(t), centre - ray.At(t), mat, t);
+    return RayHit(ray, ray.At(t), ray.At(t) - centre, mat, t);
 }
 
 void Sphere::ApplyMaterial(Material _mat)
