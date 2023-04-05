@@ -11,8 +11,7 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
     if (hitPoint.t == -1.0f)
         return glm::vec3(0.0f);
 
-    // Temporary optimisation before I implement the actual way of doing this
-    int samples = 16/depth;
+    int samples = 16;
 
     glm::vec3 integration = glm::vec3(0.0f);
 

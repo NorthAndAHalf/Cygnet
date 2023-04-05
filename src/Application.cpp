@@ -80,11 +80,11 @@ void Application::Run()
 
 	// Right Wall
 	Triangle* wallR1 = new Triangle(v7, v6, v5);
-	Triangle* wallR2 = new Triangle(v5, v7, v8);
+	Triangle* wallR2 = new Triangle(v5, v8, v7);
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
-	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
 	rightWall.AddPrimitive(wallR2);
+	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
 	traceables->push_back(&rightWall);
 
 	// Back Wall
@@ -121,11 +121,11 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	light.ApplyMaterial(Material(glm::vec3(1.0f), 25.0f));
+	light.ApplyMaterial(Material(glm::vec3(1.0f), 50.0f));
 	traceables->push_back(&light);
 
 	// Sphere
-	Sphere* sphere = new Sphere(centre, 0.5f);
+	Sphere* sphere = new Sphere(centre, 0.4f);
 	Traceable sphereObj = Traceable();
 	sphereObj.AddPrimitive(sphere);
 	sphereObj.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
@@ -151,7 +151,7 @@ void Application::Run()
 
 			RayHit hit = IntersectTraceablesIgnoreFirst(ray, *traceables);
 
-			glm::vec3 colour = Trace(hit, *traceables, 0, 3);
+			glm::vec3 colour = Trace(hit, *traceables, 0, 2);
 			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
 			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
 			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;
