@@ -1,7 +1,6 @@
 #include "Traceable.h"
 #include "RayHit.h"
 #include "glm/gtc/random.hpp"
-#include "BRDF/Diffuse.h"
 
 Traceable::Traceable()
     : primitives(new std::vector<Primitive*>)

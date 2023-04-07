@@ -1,14 +1,14 @@
 #pragma once
 
 #include "glm/vec3.hpp"
+#include "BRDF/BRDF.h"
 
 struct Material
 {
 	Material();
-	Material(glm::vec3 _albedo, float _emittedIntensity);
+	Material(glm::vec3 _albedo, float _emittedIntensity, BRDF _brdf);
 
 	glm::vec3 albedo;
 	float emittedIntensity;
-	// BRDF once implemented
-	// Diffuse brdf = albedo / pi
+	BRDF brdf;
 };

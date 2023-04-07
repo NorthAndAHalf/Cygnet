@@ -6,6 +6,7 @@
 #include "Traceable/Traceable.h"
 #include "Ray.h"
 #include "glm/geometric.hpp"
+#include "BRDF/BRDF.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -66,7 +67,7 @@ void Application::Run()
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
-	floor.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	floor.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&floor);
 
 	// Left Wall
@@ -75,7 +76,7 @@ void Application::Run()
 	Traceable leftWall = Traceable();
 	leftWall.AddPrimitive(wallL1);
 	leftWall.AddPrimitive(wallL2);
-	leftWall.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f));
+	leftWall.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&leftWall);
 
 	// Right Wall
@@ -83,8 +84,8 @@ void Application::Run()
 	Triangle* wallR2 = new Triangle(v5, v7, v8);
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
-	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
 	rightWall.AddPrimitive(wallR2);
+	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&rightWall);
 
 	// Back Wall
@@ -93,7 +94,7 @@ void Application::Run()
 	Traceable backWall = Traceable();
 	backWall.AddPrimitive(wallB1);
 	backWall.AddPrimitive(wallB2);
-	backWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	backWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&backWall);
 
 	// Front Wall
@@ -102,7 +103,7 @@ void Application::Run()
 	Traceable frontWall = Traceable();
 	frontWall.AddPrimitive(wallF1);
 	frontWall.AddPrimitive(wallF2);
-	frontWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	frontWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
 	frontWall.ignoreFirst = true;
 	traceables->push_back(&frontWall);
 
@@ -112,7 +113,7 @@ void Application::Run()
 	Traceable ceiling = Traceable();
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
-	ceiling.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	ceiling.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&ceiling);
 
 	// Light
@@ -121,14 +122,14 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	light.ApplyMaterial(Material(glm::vec3(1.0f), 25.0f));
+	light.ApplyMaterial(Material(glm::vec3(1.0f), 25.0f, DiffuseBRDF()));
 	traceables->push_back(&light);
 
 	// Sphere
 	Sphere* sphere = new Sphere(centre, 0.5f);
 	Traceable sphereObj = Traceable();
 	sphereObj.AddPrimitive(sphere);
-	sphereObj.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f));
+	sphereObj.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
 	traceables->push_back(&sphereObj);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];

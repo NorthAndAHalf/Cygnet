@@ -1,7 +1,7 @@
 #include "Trace.h"
 #include "glm/geometric.hpp"
 #include "glm/gtc/random.hpp"
-#include "BRDF/Diffuse.h"
+#include "BRDF/BRDF.h"
 
 glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceables, uint8_t depth, uint8_t limit)
 {
@@ -12,7 +12,7 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
         return glm::vec3(0.0f);
 
     // Temporary optimisation before I implement the actual way of doing this
-    int samples = 16/depth;
+    int samples = 16;
 
     glm::vec3 integration = glm::vec3(0.0f);
 
@@ -32,7 +32,7 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
         // Need to rethink how I'm storing the BRDFs in relation to the materials
         // I'm just hardcoding diffuse here because I'm not sure how to store which BRDF to use yet
 
-        integration += Li * BRDF::Diffuse(hitPoint.mat.albedo) * glm::dot(dir, hitPoint.normal);
+        integration += Li * hitPoint.BRDFCalculate() * glm::dot(dir, hitPoint.normal);
     }
 
     // Rendering Equation:
