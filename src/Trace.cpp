@@ -2,6 +2,8 @@
 #include "glm/geometric.hpp"
 #include "glm/gtc/random.hpp"
 #include "BRDF/BRDF.h"
+#include "glm/gtc/constants.hpp"
+#include "Scene.h"
 
 glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceables, uint8_t depth, uint8_t limit)
 {
@@ -20,7 +22,7 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
     // Light transport integral
     for (int i = 0; i < samples; i++)
     {
-        glm::vec3 dir = glm::normalize(glm::vec3(glm::gaussRand(0.0f, 1.0f), glm::gaussRand(0.0f, 1.0f), glm::gaussRand(0.0f, 1.0f)));
+        glm::vec3 dir = glm::normalize(glm::vec3(glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f)));
 
         // If dir is not inside the hemisphere around the normal, invert it so it is
         if (glm::dot(dir, hitPoint.normal) < 0.0f) dir = -dir;
@@ -28,10 +30,11 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
         RayHit closest = IntersectTraceables(newRay, traceables);
         glm::vec3 Li = Trace(closest, traceables, depth, limit);
 
-        // Need to rethink how I'm storing the BRDFs in relation to the materials
-        // I'm just hardcoding diffuse here because I'm not sure how to store which BRDF to use yet
+        // PDF is hardcoded atm, might have to change this once I implement importance sampling
+        // Linear PDF
+        constexpr float pdf = 1.0f / (2.0f * glm::pi<float>());
 
-        integration += Li * hitPoint.BRDFCalculate() * glm::dot(dir, hitPoint.normal);
+        integration += Li * hitPoint.BRDFCalculate() * glm::dot(dir, hitPoint.normal) * pdf;
     }
 
     // Rendering Equation:
@@ -51,7 +54,7 @@ RayHit IntersectTraceables(const Ray& ray, const std::vector<Traceable*>& tracea
         hits.push_back(t->Intersect(ray));
 
     RayHit closest = RayHit();
-    for (RayHit h : hits)
+    for (const RayHit& h : hits)
     {
         if (h.t == -1.0f)
             continue;
@@ -83,7 +86,7 @@ RayHit IntersectTraceablesIgnoreFirst(const Ray& ray, const std::vector<Traceabl
 
 
     RayHit closest = RayHit();
-    for (RayHit h : hits)
+    for (const RayHit& h : hits)
     {
         if (h.t == -1.0f)
             continue;
@@ -98,4 +101,9 @@ RayHit IntersectTraceablesIgnoreFirst(const Ray& ray, const std::vector<Traceabl
         }
     }
     return closest;
+}
+
+glm::vec3 PathTrace(const Ray& ray, const Scene& scene)
+{
+    return glm::vec3(0.0f);
 }
