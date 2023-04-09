@@ -10,7 +10,4 @@ RayHit::RayHit()
 	: ray(Ray(glm::vec3(0.0f), glm::vec3(0.0f))), pos(glm::vec3(0.0f)), normal(glm::vec3(0.0f)), mat(Material()), t(-1.0f)
 {}
 
-glm::vec3 RayHit::BRDFCalculate() const
-{
-	return mat.brdf.Calculate(ray.direction, normal, mat.albedo);
-}
+

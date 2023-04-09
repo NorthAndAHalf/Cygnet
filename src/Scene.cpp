@@ -13,3 +13,8 @@ const std::vector<Traceable*>* Scene::GetTraceables() const
 {
 	return traceables;
 }
+
+RayHit Scene::Intersect(const Ray& ray) const
+{
+	return RayHit();
+}
