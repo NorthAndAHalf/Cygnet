@@ -125,8 +125,8 @@ void Application::Run()
 	traceables->push_back(&ceiling);
 
 	// Light
-	Triangle* light1 = new Triangle(v2 + glm::vec3(0.75f, -0.01f, -0.75f), v2 + glm::vec3(0.75f, -0.01f, -1.25f), v2 + glm::vec3(1.25f, -0.01f, -1.25f));
-	Triangle* light2 = new Triangle(v2 + glm::vec3(1.25f, -0.01f, -1.25f), v2 + glm::vec3(1.25f, -0.01f, -0.75f), v2 + glm::vec3(0.75f, -0.01f, -0.75f));
+	Triangle* light1 = new Triangle(v2 + glm::vec3(0.75f, -0.001f, -0.75f), v2 + glm::vec3(0.75f, -0.001f, -1.25f), v2 + glm::vec3(1.25f, -0.001f, -1.25f));
+	Triangle* light2 = new Triangle(v2 + glm::vec3(1.25f, -0.001f, -1.25f), v2 + glm::vec3(1.25f, -0.001f, -0.75f), v2 + glm::vec3(0.75f, -0.001f, -0.75f));
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
@@ -174,7 +174,10 @@ void Application::Run()
 				{
 					glm::vec3 s = glm::vec3(pixelCoord.x + (sampleDistance * j), pixelCoord.y + (sampleDistance * i), pixelCoord.z);
 					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
-					radiance += TracePath(ray, *scene, 0);
+					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
+
+
+					radiance += sampleRadiance;
 				}
 			}
 			radiance /= samples * samples;

@@ -14,7 +14,8 @@ glm::vec3 SampleHemisphere(glm::vec3 normal, float& p)
 
     // If dir is not inside the hemisphere around the normal, invert it so it is
     if (glm::dot(dir, normal) < 0.0f) dir = -dir;
-    p = glm::dot(dir, normal) / glm::pi<float>();
+    p = glm::max(glm::dot(dir, normal) / glm::pi<float>(), 0.001f);
+
     return dir;
 }
 
@@ -67,8 +68,6 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
 
     // Possibly need to multiply this by the BRDF but that can be done in the intersect function and the final result stored at that point's albedo
     glm::vec3 radiance = hit.mat->albedo * hit.mat->emittedIntensity;
-    if (hit.mat->emittedIntensity > 0.0f) return radiance; // Do not integrate over emissive surfaces, just return the emitted light
-
 
     float p = 0.0f;
     glm::vec3 dir = SampleHemisphere(hit.normal, p);
@@ -79,5 +78,6 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
 
     return radiance;
 }
+
 // Remember to show examples of Trace() vs TracePath() in diss
 // Talk about timings too
