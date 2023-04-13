@@ -46,10 +46,11 @@ void Traceable::AddPrimitive(Primitive* p)
     primitives->push_back(p);
 }
 
-void Traceable::ApplyMaterial(Material mat)
+void Traceable::ApplyMaterial(std::shared_ptr<Material> mat)
 {
     for (Primitive* p: *primitives)
     {
         p->ApplyMaterial(mat);
     }
 }
+

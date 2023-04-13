@@ -12,7 +12,7 @@ public:
 	void SetTraceables(std::vector<Traceable*>* _traceables);
 	const std::vector<Traceable*>* GetTraceables() const;
 
-	RayHit Intersect(const Ray& ray) const;
+	RayHit Intersect(const Ray& ray, uint8_t bounces) const;
 
 private:
 	std::vector<Traceable*>* traceables;

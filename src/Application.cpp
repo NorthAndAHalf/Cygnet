@@ -27,8 +27,8 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 500;
-	const int height = 500;
+	const int width = 1000;
+	const int height = 1000;
 	float focalLength = 1.7f;
 
 	// I want to use smart pointers instead of these raw pointers everywhere
@@ -61,13 +61,16 @@ void Application::Run()
 	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
+	std::shared_ptr<BRDF> brdf = std::shared_ptr<BRDF>(new BRDF());
+
 	// Floor
 	Triangle* floor1 = new Triangle(v1, v4, v8);
 	Triangle* floor2 = new Triangle(v8, v5, v1);
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
-	floor.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
+	Material floorMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	floor.ApplyMaterial(std::shared_ptr<Material>(&floorMat));
 	traceables->push_back(&floor);
 
 	// Left Wall
@@ -76,7 +79,8 @@ void Application::Run()
 	Traceable leftWall = Traceable();
 	leftWall.AddPrimitive(wallL1);
 	leftWall.AddPrimitive(wallL2);
-	leftWall.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, DiffuseBRDF()));
+	Material wallLMat = Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, brdf);
+	leftWall.ApplyMaterial(std::shared_ptr<Material>(&wallLMat));
 	traceables->push_back(&leftWall);
 
 	// Right Wall
@@ -85,7 +89,8 @@ void Application::Run()
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
 	rightWall.AddPrimitive(wallR2);
-	rightWall.ApplyMaterial(Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, DiffuseBRDF()));
+	Material wallRMat = Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, brdf);
+	rightWall.ApplyMaterial(std::shared_ptr<Material>(&wallRMat));
 	traceables->push_back(&rightWall);
 
 	// Back Wall
@@ -94,7 +99,8 @@ void Application::Run()
 	Traceable backWall = Traceable();
 	backWall.AddPrimitive(wallB1);
 	backWall.AddPrimitive(wallB2);
-	backWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
+	Material wallBMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	backWall.ApplyMaterial(std::shared_ptr<Material>(&wallBMat));
 	traceables->push_back(&backWall);
 
 	// Front Wall
@@ -103,7 +109,8 @@ void Application::Run()
 	Traceable frontWall = Traceable();
 	frontWall.AddPrimitive(wallF1);
 	frontWall.AddPrimitive(wallF2);
-	frontWall.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
+	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	frontWall.ApplyMaterial(std::shared_ptr<Material>(&wallFMat));
 	frontWall.ignoreFirst = true;
 	traceables->push_back(&frontWall);
 
@@ -113,7 +120,8 @@ void Application::Run()
 	Traceable ceiling = Traceable();
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
-	ceiling.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
+	Material ceilMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	ceiling.ApplyMaterial(std::shared_ptr<Material>(&ceilMat));
 	traceables->push_back(&ceiling);
 
 	// Light
@@ -122,17 +130,27 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	light.ApplyMaterial(Material(glm::vec3(1.0f), 25.0f, DiffuseBRDF()));
+	Material lightMat = Material(glm::vec3(1.0f), 25.0f, brdf);
+	light.ApplyMaterial(std::shared_ptr<Material>(&lightMat));
 	traceables->push_back(&light);
 
 	// Sphere
 	Sphere* sphere = new Sphere(centre, 0.4f);
 	Traceable sphereObj = Traceable();
 	sphereObj.AddPrimitive(sphere);
-	sphereObj.ApplyMaterial(Material(glm::vec3(1.0f), 0.0f, DiffuseBRDF()));
+	Material sphereMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	sphereObj.ApplyMaterial(std::shared_ptr<Material>(&sphereMat));
 	traceables->push_back(&sphereObj);
 
+	Scene* scene = new Scene(traceables);
+
 	uint8_t* pixels = new uint8_t[width * height * 3];
+	uint8_t samples = 8; // 1D samples, so the actual sample count will be squared
+
+	// Only works for square images atm
+	// Currently extrememley scuffed btw, I think it works though?
+	float pixelDistance = glm::vec3(2 * (double)1 / (double)width - 1, 2 * (double)1 / (double)height - 1, -focalLength).x - glm::vec3(2 * (double)0 / (double)width - 1, 2 * (double)0 / (double)height - 1, -focalLength).x;
+	float sampleDistance = pixelDistance / samples;
 
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 	// Temporary loop to trace 1 perspective ray per pixel:
@@ -146,16 +164,24 @@ void Application::Run()
 			pixels[((x + (y * width)) * 3)] = 0;
 			pixels[((x + (y * width)) * 3) + 1] = 0;
 			pixels[((x + (y * width)) * 3) + 2] = 0;
+			
+			glm::vec3 radiance = glm::vec3(0.0f);
 			glm::vec3 pixelCoord = glm::vec3(2 * (double)x / (double)width - 1, 2 * (double)y / (double)height - 1, -focalLength);
-			Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
-			std::vector<Traceable*> intersected = std::vector<Traceable*>();
 
-			RayHit hit = IntersectTraceablesIgnoreFirst(ray, *traceables);
+			for (int i = 0; i < samples; i++)
+			{
+				for (int j = 0; j < samples; j++)
+				{
+					glm::vec3 s = glm::vec3(pixelCoord.x + (sampleDistance * j), pixelCoord.y + (sampleDistance * i), pixelCoord.z);
+					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
+					radiance += TracePath(ray, *scene, 0);
+				}
+			}
+			radiance /= samples * samples;
 
-			glm::vec3 colour = Trace(hit, *traceables, 0, 2);
-			pixels[((x + (y * width)) * 3)]		= colour.x * 255;
-			pixels[((x + (y * width)) * 3) + 1] = colour.y * 255;
-			pixels[((x + (y * width)) * 3) + 2] = colour.z * 255;
+			pixels[((x + (y * width)) * 3)]		= radiance.x * 255;
+			pixels[((x + (y * width)) * 3) + 1] = radiance.y * 255;
+			pixels[((x + (y * width)) * 3) + 2] = radiance.z * 255;
 		}
 	}
 

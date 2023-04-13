@@ -11,4 +11,3 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
 glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces);
 
 RayHit IntersectTraceables(const Ray& ray, const std::vector<Traceable*>& traceables);
-RayHit IntersectTraceablesIgnoreFirst(const Ray& ray, const std::vector<Traceable*>& traceables);
