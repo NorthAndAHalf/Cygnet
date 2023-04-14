@@ -145,7 +145,7 @@ void Application::Run()
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 8; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 16; // 1D samples, so the actual sample count will be squared
 
 	// Only works for square images atm
 	// Currently extrememley scuffed btw, I think it works though?

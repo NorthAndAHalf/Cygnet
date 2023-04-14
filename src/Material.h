@@ -7,7 +7,7 @@
 struct Material
 {
 	Material();
-	Material(glm::vec3 _albedo, float _emittedIntensity, std::shared_ptr<BRDF>& _brdf);
+	Material(glm::vec3 _albedo, float _emittedIntensity, std::shared_ptr<BRDF> _brdf);
 
 	glm::vec3 albedo;
 	float emittedIntensity;

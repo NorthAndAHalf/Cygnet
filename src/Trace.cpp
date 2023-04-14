@@ -61,9 +61,15 @@ glm::vec3 Trace(const RayHit& hitPoint, const std::vector<Traceable*>& traceable
 
 glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
 {
-    if (bounces >= 3) return glm::vec3(0.0f);
+    if (bounces >= 3) 
+        return glm::vec3(0.0f);
 
     RayHit hit = scene.Intersect(ray, bounces);
+
+    // Return here if the ray misses
+    // Necassary for optimisation but also because material is NULL for ray misses
+    if (hit.miss)
+        return glm::vec3(0.0f);
     bounces++;
 
     // Possibly need to multiply this by the BRDF but that can be done in the intersect function and the final result stored at that point's albedo
