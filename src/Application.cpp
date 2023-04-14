@@ -180,6 +180,7 @@ void Application::Run()
 					radiance += sampleRadiance;
 				}
 			}
+
 			radiance /= samples * samples;
 
 			pixels[((x + (y * width)) * 3)]		= radiance.x * 255;

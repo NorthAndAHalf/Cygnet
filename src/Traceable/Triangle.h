@@ -8,6 +8,7 @@ public:
 	Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 
 	virtual RayHit Intersect(const Ray& ray);
+	virtual float IntersectTest(const Ray& ray);
 	virtual void ApplyMaterial(Material* _mat) override;
 private:
 	glm::vec3 P1;

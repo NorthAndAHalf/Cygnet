@@ -7,6 +7,7 @@ public:
 	Sphere(glm::vec3 _origin, float _radius);
 
 	virtual RayHit Intersect(const Ray& ray);
+	virtual float IntersectTest(const Ray& ray);
 	virtual void ApplyMaterial(Material* _mat) override;
 private:
 	glm::vec3 centre;

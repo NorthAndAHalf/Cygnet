@@ -14,7 +14,43 @@ Traceable::~Traceable()
 
 RayHit Traceable::Intersect(const Ray& ray)
 {
-    std::vector<RayHit> hits;
+    // Might need to replace this code once BVH is implemented
+    std::pair<Primitive*, float> closest = std::pair<Primitive*, float>(nullptr, -1.0f);
+    bool miss = true;
+
+    for (Primitive* p : *primitives)
+    {
+        float t = p->IntersectTest(ray);
+
+        if (t == -1.0f)
+        {
+            continue;
+        }
+
+        if (closest.first == nullptr)
+        {
+            closest.first = p;
+            closest.second = t;
+            miss = t == -1.0f;
+            continue;
+        }
+
+        if (closest.second > t && t > 0.0001f)
+        {
+            closest.first = p;
+            closest.second = t;
+        }
+    }
+
+    if (miss)
+    {
+        return RayHit();
+    }
+
+    return closest.first->Intersect(ray);
+
+
+    /*std::vector<RayHit> hits;
 
     for (Primitive* p : *primitives)
         hits.push_back(p->Intersect(ray));
@@ -38,7 +74,7 @@ RayHit Traceable::Intersect(const Ray& ray)
             closest = h;
         }
     }
-    return closest;
+    return closest;*/
 }
 
 void Traceable::AddPrimitive(Primitive* p)

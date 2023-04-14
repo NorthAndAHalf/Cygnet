@@ -19,6 +19,19 @@ RayHit Sphere::Intersect(const Ray& ray)
     return RayHit(ray, ray.At(t), ray.At(t) - centre, mat, t);
 }
 
+float Sphere::IntersectTest(const Ray& ray)
+{
+    glm::vec3 oc = ray.origin - centre;
+    float b = glm::dot(oc, ray.direction);
+    float c = dot(oc, oc) - radius * radius;
+    float h = (b * b) - c;
+    if (h < 0.0f) return -1.0f;
+    h = sqrt(h);
+    float t = -b - h;
+    if (t <= 0.0f) return -1.0f;
+    return t;
+}
+
 void Sphere::ApplyMaterial(Material* _mat)
 {
     mat = _mat;
