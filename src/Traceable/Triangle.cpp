@@ -27,7 +27,7 @@ RayHit Triangle::Intersect(const Ray& ray)
 	return RayHit(ray, ray.At(t), normal, mat, t);
 }
 
-void Triangle::ApplyMaterial(std::shared_ptr<Material> _mat)
+void Triangle::ApplyMaterial(Material* _mat)
 {
 	mat = _mat;
 }

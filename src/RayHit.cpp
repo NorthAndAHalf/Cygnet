@@ -1,6 +1,6 @@
 #include "RayHit.h"
 
-RayHit::RayHit(Ray _ray, glm::vec3 _pos, glm::vec3 _normal, std::shared_ptr<Material> _mat, float _t)
+RayHit::RayHit(Ray _ray, glm::vec3 _pos, glm::vec3 _normal, Material* _mat, float _t)
 	: ray(_ray), pos(_pos), normal(_normal), mat(_mat), t(_t), miss(false)
 {
 

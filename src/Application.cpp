@@ -61,7 +61,7 @@ void Application::Run()
 	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
-	std::shared_ptr<BRDF> brdf = std::shared_ptr<BRDF>(new BRDF());
+	BRDF* brdf = &BRDF();
 
 	// Floor
 	Triangle* floor1 = new Triangle(v1, v4, v8);
@@ -70,7 +70,7 @@ void Application::Run()
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
 	Material floorMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	floor.ApplyMaterial(std::shared_ptr<Material>(&floorMat));
+	floor.ApplyMaterial(&floorMat);
 	traceables->push_back(&floor);
 
 	// Left Wall
@@ -80,7 +80,7 @@ void Application::Run()
 	leftWall.AddPrimitive(wallL1);
 	leftWall.AddPrimitive(wallL2);
 	Material wallLMat = Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, brdf);
-	leftWall.ApplyMaterial(std::shared_ptr<Material>(&wallLMat));
+	leftWall.ApplyMaterial(&wallLMat);
 	traceables->push_back(&leftWall);
 
 	// Right Wall
@@ -90,7 +90,7 @@ void Application::Run()
 	rightWall.AddPrimitive(wallR1);
 	rightWall.AddPrimitive(wallR2);
 	Material wallRMat = Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, brdf);
-	rightWall.ApplyMaterial(std::shared_ptr<Material>(&wallRMat));
+	rightWall.ApplyMaterial(&wallRMat);
 	traceables->push_back(&rightWall);
 
 	// Back Wall
@@ -100,7 +100,7 @@ void Application::Run()
 	backWall.AddPrimitive(wallB1);
 	backWall.AddPrimitive(wallB2);
 	Material wallBMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	backWall.ApplyMaterial(std::shared_ptr<Material>(&wallBMat));
+	backWall.ApplyMaterial(&wallBMat);
 	traceables->push_back(&backWall);
 
 	// Front Wall
@@ -110,7 +110,7 @@ void Application::Run()
 	frontWall.AddPrimitive(wallF1);
 	frontWall.AddPrimitive(wallF2);
 	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	frontWall.ApplyMaterial(std::shared_ptr<Material>(&wallFMat));
+	frontWall.ApplyMaterial(&wallFMat);
 	frontWall.ignoreFirst = true;
 	traceables->push_back(&frontWall);
 
@@ -121,7 +121,7 @@ void Application::Run()
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
 	Material ceilMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	ceiling.ApplyMaterial(std::shared_ptr<Material>(&ceilMat));
+	ceiling.ApplyMaterial(&ceilMat);
 	traceables->push_back(&ceiling);
 
 	// Light
@@ -131,7 +131,7 @@ void Application::Run()
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
 	Material lightMat = Material(glm::vec3(1.0f), 25.0f, brdf);
-	light.ApplyMaterial(std::shared_ptr<Material>(&lightMat));
+	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
 
 	// Sphere
@@ -139,7 +139,7 @@ void Application::Run()
 	Traceable sphereObj = Traceable();
 	sphereObj.AddPrimitive(sphere);
 	Material sphereMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	sphereObj.ApplyMaterial(std::shared_ptr<Material>(&sphereMat));
+	sphereObj.ApplyMaterial(&sphereMat);
 	traceables->push_back(&sphereObj);
 
 	Scene* scene = new Scene(traceables);

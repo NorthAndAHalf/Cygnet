@@ -19,7 +19,7 @@ RayHit Sphere::Intersect(const Ray& ray)
     return RayHit(ray, ray.At(t), ray.At(t) - centre, mat, t);
 }
 
-void Sphere::ApplyMaterial(std::shared_ptr<Material> _mat)
+void Sphere::ApplyMaterial(Material* _mat)
 {
     mat = _mat;
 }

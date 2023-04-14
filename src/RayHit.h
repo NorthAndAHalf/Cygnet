@@ -7,13 +7,13 @@
 
 struct RayHit
 {
-	RayHit(Ray _ray, glm::vec3 _pos, glm::vec3 _normal, std::shared_ptr<Material> _mat, float _t);
+	RayHit(Ray _ray, glm::vec3 _pos, glm::vec3 _normal, Material* _mat, float _t);
 	RayHit();
 
 	Ray ray;
 	glm::vec3 pos;
 	glm::vec3 normal;
-	std::shared_ptr<Material> mat;
+	Material* mat;
 	float t;
 	bool miss;
 };

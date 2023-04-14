@@ -14,7 +14,7 @@ public:
 	RayHit Intersect(const Ray& ray);
 
 	void AddPrimitive(Primitive* p);
-	void ApplyMaterial(std::shared_ptr<Material> mat);
+	void ApplyMaterial(Material* mat);
 
 	bool ignoreFirst = false;
 
