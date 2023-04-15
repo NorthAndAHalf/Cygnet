@@ -21,7 +21,6 @@ workspace "Cygnet"                   -- Solution Name
   -------------------------------
   -- [ COMPILER/LINKER CONFIG] --
   -------------------------------
-  flags "FatalWarnings" -- comment if you don't want warnings to count as errors
   warnings "Extra"
 
   -- see 'filter' in the wiki pages
@@ -90,7 +89,8 @@ workspace "Cygnet"                   -- Solution Name
       -- include the headers of any libraries/dlls you need
       "vendor/glm",
       "vendor/stb",
-      "vendor/spdlog/include"
+      "vendor/spdlog/include",
+      "vendor/assimp/include"
     }
 
 
@@ -102,7 +102,8 @@ workspace "Cygnet"                   -- Solution Name
       -- add dependency directories here
       "vendor/glm",
       "vendor/stb",
-      "vendor/spdlog"
+      "vendor/spdlog",
+      "vendor/assimp"
     }
 
     links

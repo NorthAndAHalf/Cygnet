@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "glm/geometric.hpp"
 #include "BRDF/BRDF.h"
+#include "glm/gtc/random.hpp"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -27,8 +28,8 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 1000;
-	const int height = 1000;
+	const int width = 500;
+	const int height = 500;
 	float focalLength = 1.7f;
 
 	// I want to use smart pointers instead of these raw pointers everywhere
@@ -130,7 +131,7 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	Material lightMat = Material(glm::vec3(1.0f), 25.0f, brdf);
+	Material lightMat = Material(glm::vec3(1.0f), 30.0f, brdf);
 	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
 
@@ -145,7 +146,7 @@ void Application::Run()
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 16; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 48; // 1D samples, so the actual sample count will be squared
 
 	// Only works for square images atm
 	// Currently extrememley scuffed btw, I think it works though?
@@ -154,10 +155,10 @@ void Application::Run()
 
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 	// Temporary loop to trace 1 perspective ray per pixel:
-	for (int y = 0; y < height; y++)
+	for (int y = height - 1; y >= 0; y--)
 	{
 		// Percentage counter
-		if((int)(((float)y/(float)height)*1000.0f)%100 == 0) spdlog::info(std::to_string((int)(((float)y / (float)height) * 100)) + "%");
+		if((int)(((float)y/(float)height)*1000.0f)%100 == 0) spdlog::info(std::to_string(100 - (int)(((float)y / (float)height) * 100)) + "%");
 		for (int x = 0; x < width; x++)
 		{
 			//idk why but all the uint8_ts in the pixel array have a default value of 205
@@ -173,9 +174,11 @@ void Application::Run()
 				for (int j = 0; j < samples; j++)
 				{
 					glm::vec3 s = glm::vec3(pixelCoord.x + (sampleDistance * j), pixelCoord.y + (sampleDistance * i), pixelCoord.z);
-					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(pixelCoord));
+					float jitterRange = sampleDistance / 2;
+					glm::vec3 jitter = glm::vec3(glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange));
+					s += jitter;
+					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(s));
 					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
-
 
 					radiance += sampleRadiance;
 				}
@@ -183,14 +186,15 @@ void Application::Run()
 
 			radiance /= samples * samples;
 
-			pixels[((x + (y * width)) * 3)]		= radiance.x * 255;
-			pixels[((x + (y * width)) * 3) + 1] = radiance.y * 255;
-			pixels[((x + (y * width)) * 3) + 2] = radiance.z * 255;
+			// Pixels is an array of 1 byte unsiged ints, so clamp values to 255 to prevent overflows
+			pixels[((x + (y * width)) * 3)]		= glm::min(radiance.x * 255, 255.0f);
+			pixels[((x + (y * width)) * 3) + 1] = glm::min(radiance.y * 255, 255.0f);
+			pixels[((x + (y * width)) * 3) + 2] = glm::min(radiance.z * 255, 255.0f);
 		}
 	}
 
 	stbi_write_bmp(path.data(), width, height, 3, pixels);
-	spdlog::info("Finished");
+	spdlog::info("Done");
 
 	// Opening image file:
 	system(path.data());
