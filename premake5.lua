@@ -89,7 +89,8 @@ workspace "Cygnet"                   -- Solution Name
       -- include the headers of any libraries/dlls you need
       "vendor/glm",
       "vendor/stb",
-      "vendor/spdlog/include"
+      "vendor/spdlog/include",
+      "vendor/assimp/include"
     }
 
 
@@ -101,7 +102,8 @@ workspace "Cygnet"                   -- Solution Name
       -- add dependency directories here
       "vendor/glm",
       "vendor/stb",
-      "vendor/spdlog"
+      "vendor/spdlog",
+      "vendor/assimp"
     }
 
     links
