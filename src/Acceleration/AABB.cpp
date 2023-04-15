@@ -7,13 +7,17 @@ AABB::AABB(float _minX, float _maxX, float _minY, float _maxY, float _minZ, floa
 {
 }
 
-float AABB::Intersect(const Ray& ray)
+bool AABB::Intersect(const Ray& ray)
 {
-    glm::vec3 m = 1.0f / ray.direction;
-    glm::vec3 n = m * ray.origin;
-    glm::vec3 size = glm::vec3(glm::abs(maxX - minX), glm::abs(maxY - minY), glm::abs(maxZ - minZ));
-    glm::vec3 k = glm::abs(m) * size;
+    float tmin_x = (minX - ray.origin.x) * -ray.direction.x;
+    float tmax_x = (maxX - ray.origin.x) * -ray.direction.x;
+    float tmin_y = (minY - ray.origin.y) * -ray.direction.y;
+    float tmax_y = (maxY - ray.origin.y) * -ray.direction.y;
+    float tmin_z = (minZ - ray.origin.z) * -ray.direction.z;
+    float tmax_z = (maxZ - ray.origin.z) * -ray.direction.z;
 
+    float tmin = glm::max(glm::max(tmin_x, tmin_y), tmin_z);
+    float tmax = glm::min(glm::min(tmax_x, tmax_y), tmax_z);
 
-    return -1.0f;
+    return tmax > tmin;
 }
