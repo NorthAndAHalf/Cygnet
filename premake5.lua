@@ -21,7 +21,6 @@ workspace "Cygnet"                   -- Solution Name
   -------------------------------
   -- [ COMPILER/LINKER CONFIG] --
   -------------------------------
-  flags "FatalWarnings" -- comment if you don't want warnings to count as errors
   warnings "Extra"
 
   -- see 'filter' in the wiki pages
