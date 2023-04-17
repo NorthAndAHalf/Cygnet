@@ -85,5 +85,11 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
     return radiance;
 }
 
+glm::vec3 DebugTrace(Ray ray, const Scene& scene)
+{
+    RayHit hit = scene.Intersect(ray, 0);
+    return hit.mat->albedo;
+}
+
 // Remember to show examples of Trace() vs TracePath() in diss
 // Talk about timings too

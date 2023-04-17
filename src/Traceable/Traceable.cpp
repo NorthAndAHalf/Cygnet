@@ -1,6 +1,9 @@
 #include "Traceable.h"
 #include "RayHit.h"
 #include "glm/gtc/random.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/rotate_vector.hpp"
+#include "Triangle.h"
 
 Traceable::Traceable()
     : primitives(new std::vector<Primitive*>)
@@ -9,6 +12,9 @@ Traceable::Traceable()
 
 Traceable::~Traceable()
 {
+    for (Primitive* p : *primitives)
+        delete p;
+
     delete primitives;
 }
 
@@ -48,33 +54,51 @@ RayHit Traceable::Intersect(const Ray& ray)
     }
 
     return closest.first->Intersect(ray);
+}
 
+void Traceable::AddModel(const Model& model)
+{
+    const std::vector<glm::vec3>& vertices = model.GetVertices();
+    const std::vector<unsigned int>& indices = model.GetIndices();
 
-    /*std::vector<RayHit> hits;
-
-    for (Primitive* p : *primitives)
-        hits.push_back(p->Intersect(ray));
-
-    if (hits.empty()) return RayHit();
-
-    RayHit closest = RayHit();
-    for (RayHit h : hits)
+    for (int p = 0; p < indices.size() - 3; p+=3)
     {
-        if (h.t < 0.0001f)
-            continue;
-        
-        if (closest.t == -1.0f)
-        {
-            closest = h;
-            continue;
-        }
+        glm::vec4 i1 = glm::vec4(vertices.at(indices.at(p)), 1.0f);
+        glm::vec4 i2 = glm::vec4(vertices.at(indices.at(p + 1)), 1.0f);
+        glm::vec4 i3 = glm::vec4(vertices.at(indices.at(p + 2)), 1.0f);
 
-        if (h.t < closest.t)
-        {
-            closest = h;
-        }
+        i1 = glm::rotateX(i1, model.rot.x);
+        i1 = glm::rotateY(i1, model.rot.y);
+        i1 = glm::rotateZ(i1, model.rot.z);
+
+        i2 = glm::rotateX(i2, model.rot.x);
+        i2 = glm::rotateY(i2, model.rot.y);
+        i2 = glm::rotateZ(i2, model.rot.z);
+
+        i3 = glm::rotateX(i3, model.rot.x);
+        i3 = glm::rotateY(i3, model.rot.y);
+        i3 = glm::rotateZ(i3, model.rot.z);
+        
+        i1 *= glm::vec4(model.scale, model.scale, model.scale, 1.0f);
+        i2 *= glm::vec4(model.scale, model.scale, model.scale, 1.0f);
+        i3 *= glm::vec4(model.scale, model.scale, model.scale, 1.0f);
+
+        glm::vec3 i1v3 = glm::vec3(i1.x, i1.y, i1.z);
+        glm::vec3 i2v3 = glm::vec3(i2.x, i2.y, i2.z);
+        glm::vec3 i3v3 = glm::vec3(i3.x, i3.y, i3.z);
+
+        spdlog::trace("Before translation: " + std::to_string(i1v3.x) + ", " + std::to_string(i1v3.y) + ", " + std::to_string(i1v3.z));
+
+        i1v3 += model.pos;
+        i2v3 += model.pos;
+        i3v3 += model.pos;
+
+        spdlog::trace("After translation: " + std::to_string(i1v3.x) + ", " + std::to_string(i1v3.y) + ", " + std::to_string(i1v3.z));
+
+        // This pointer is deleted in the traceable's destructor
+        Triangle* triangle = new Triangle(i1v3, i2v3, i3v3);
+        primitives->push_back(triangle);
     }
-    return closest;*/
 }
 
 void Traceable::AddPrimitive(Primitive* p)

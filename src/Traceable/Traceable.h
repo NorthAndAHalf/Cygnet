@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "glm/vec3.hpp"
 #include "Ray.h"
+#include "Models/Model.h"
 
 class Traceable
 {
@@ -14,6 +15,8 @@ public:
 	RayHit Intersect(const Ray& ray);
 
 	void AddPrimitive(Primitive* p);
+	void AddModel(const Model& model);
+
 	void ApplyMaterial(Material* mat);
 
 	bool ignoreFirst = false;

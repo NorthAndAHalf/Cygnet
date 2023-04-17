@@ -8,6 +8,11 @@
 #include "glm/geometric.hpp"
 #include "BRDF/BRDF.h"
 #include "glm/gtc/random.hpp"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "glm/gtc/constants.hpp"
+#include "Models/Model.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -32,21 +37,19 @@ void Application::Run()
 	const int height = 500;
 	float focalLength = 1.7f;
 
-	// I want to use smart pointers instead of these raw pointers everywhere
-	// But idk how tf that works with inheritance
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
-	/*Sphere* sphere = new Sphere(glm::vec3(0.5f, 0.0f, -1.5f), 0.3f);
-	Triangle* triangle = new Triangle(glm::vec3(-0.5f, -0.5f, -2.0f), glm::vec3(-0.5f, 0.5f, -2.0f), glm::vec3(0.5f,  0.5f, -2.0f));
-	Triangle* triangle2 = new Triangle(glm::vec3(0.5f, 0.5f, -2.0f), glm::vec3(0.5f, -0.5f, -2.0f), glm::vec3(-0.5f, -0.5f, -2.0f));
-	Traceable model = Traceable();
-	model.AddPrimitive(sphere);
-	Traceable model2 = Traceable();
-	model2.AddPrimitive(triangle);
-	model2.AddPrimitive(triangle2);
-	model.ApplyMaterial(Material(glm::vec3(1.0f), 30.0f));
-	model2.ApplyMaterial(Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f));
-	traceables->push_back(&model);
-	traceables->push_back(&model2);*/
+
+	Assimp::Importer importer;
+
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/minecraft_creeper.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
+	if (!pScene)
+	{
+		spdlog::critical(importer.GetErrorString());
+	}
+
+	Model model = Model(pScene, glm::vec3(0.0f, 0.7f, -3.0f), glm::vec3(0.0f, 1.552f, 3.14f), 0.05f);
+	model.Print();
 
 	// BTEC Cornell Box
 
@@ -136,12 +139,19 @@ void Application::Run()
 	traceables->push_back(&light);
 
 	// Sphere
-	Sphere* sphere = new Sphere(centre, 0.4f);
+	/*Sphere* sphere = new Sphere(centre, 0.4f);
 	Traceable sphereObj = Traceable();
 	sphereObj.AddPrimitive(sphere);
 	Material sphereMat = Material(glm::vec3(1.0f), 0.0f, brdf);
 	sphereObj.ApplyMaterial(&sphereMat);
-	traceables->push_back(&sphereObj);
+	traceables->push_back(&sphereObj);*/
+
+	// Creeper Aw mam
+	Traceable creeper = Traceable();
+	creeper.AddModel(model);
+	Material sphereMat = Material(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, brdf);
+	creeper.ApplyMaterial(&sphereMat);
+	traceables->push_back(&creeper);
 
 	Scene* scene = new Scene(traceables);
 
@@ -179,6 +189,7 @@ void Application::Run()
 					s += jitter;
 					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(s));
 					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
+					//glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
 
 					radiance += sampleRadiance;
 				}
