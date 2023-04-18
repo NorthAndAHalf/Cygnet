@@ -5,6 +5,7 @@
 #include "glm/vec3.hpp"
 #include "Ray.h"
 #include "Models/Model.h"
+#include "Acceleration/AABB.h"
 
 class Traceable
 {
@@ -17,12 +18,16 @@ public:
 	void AddPrimitive(Primitive* p);
 	void AddModel(const Model& model);
 
+	void ConstructBVH();
 	void ApplyMaterial(Material* mat);
 
 	bool ignoreFirst = false;
+	bool hasAABB = false;
 
 private:
 	std::vector<Primitive*>* primitives; 
+
+	AABB* aabb;
 
 	/*
 	Will require an acceleration structure to be stored here in the future

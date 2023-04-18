@@ -33,8 +33,8 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 500;
-	const int height = 500;
+	const int width = 250;
+	const int height = 250;
 	float focalLength = 1.7f;
 
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
@@ -152,6 +152,7 @@ void Application::Run()
 	Material sphereMat = Material(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, brdf);
 	creeper.ApplyMaterial(&sphereMat);
 	traceables->push_back(&creeper);
+	creeper.ConstructBVH();
 
 	Scene* scene = new Scene(traceables);
 
@@ -188,8 +189,8 @@ void Application::Run()
 					glm::vec3 jitter = glm::vec3(glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange));
 					s += jitter;
 					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(s));
-					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
-					//glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
+					//glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
+					glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
 
 					radiance += sampleRadiance;
 				}

@@ -18,9 +18,24 @@ Traceable::~Traceable()
     delete primitives;
 }
 
+void Traceable::ConstructBVH()
+{
+    aabb = new AABB(primitives);
+    hasAABB = true;
+}
+
 RayHit Traceable::Intersect(const Ray& ray)
 {
-    // Might need to replace this code once BVH is implemented
+    // (Might need to replace this code once BVH is implemented
+    if (hasAABB)
+    {
+        if (!aabb->Intersect(ray))
+        {
+            return RayHit();
+        }
+    }
+
+
     std::pair<Primitive*, float> closest = std::pair<Primitive*, float>(nullptr, -1.0f);
     bool miss = true;
 

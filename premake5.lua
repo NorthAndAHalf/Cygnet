@@ -35,14 +35,6 @@ workspace "Cygnet"                   -- Solution Name
     flags         { "MultiProcessorCompile", "NoMinimalRebuild" }
     linkoptions   { "/ignore:4099" }      -- Ignore library pdb warnings when running in debug
 
-  -- building makefiles
-  filter { "action:gmake" }
-    flags { "C++11" }
-
-  -- building make files on mac specifically
-  filter { "system:macosx", "action:gmake"}
-    toolset "clang"
-
   filter {} -- clear filter when you know you no longer need it!
 
 
@@ -52,6 +44,7 @@ workspace "Cygnet"                   -- Solution Name
   project "Cygnet"
     kind "ConsoleApp" -- "WindowApp" removes console
     language "C++"
+    cppdialect "C++17"
     targetdir (ROOT .. "bin_%{cfg.buildcfg}_%{cfg.platform}") -- where the output binary goes.
     targetname "Cygnet" -- the name of the executable saved to targetdir
 
