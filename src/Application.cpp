@@ -33,22 +33,22 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 500;
-	const int height = 500;
+	const int width = 250;
+	const int height = 250;
 	float focalLength = 1.7f;
 
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/minecraft_creeper.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/swan.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 
 	if (!pScene)
 	{
 		spdlog::critical(importer.GetErrorString());
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, 0.7f, -3.0f), glm::vec3(0.0f, 1.552f, 3.14f), 0.05f);
+	Model model = Model(pScene, glm::vec3(0.0f, 0.7f, -3.0f), glm::vec3(0.0f, 2.0f, 3.14f), 0.05f);
 	model.Print();
 
 	// BTEC Cornell Box
@@ -157,7 +157,7 @@ void Application::Run()
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 48; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 32; // 1D samples, so the actual sample count will be squared
 
 	// Only works for square images atm
 	// Currently extrememley scuffed btw, I think it works though?

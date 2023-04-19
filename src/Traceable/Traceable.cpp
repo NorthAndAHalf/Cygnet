@@ -20,7 +20,7 @@ Traceable::~Traceable()
 
 void Traceable::ConstructBVH()
 {
-    aabb = new AABB(primitives);
+    aabb = new AABB(primitives, 8);
     hasAABB = true;
 }
 
