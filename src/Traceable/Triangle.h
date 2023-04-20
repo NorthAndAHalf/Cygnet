@@ -16,4 +16,5 @@ public:
 	glm::vec3 P3;
 
 	Material* mat;
+	static int intersectionCount;
 };

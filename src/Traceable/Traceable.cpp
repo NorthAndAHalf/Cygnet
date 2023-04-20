@@ -6,7 +6,7 @@
 #include "Triangle.h"
 
 Traceable::Traceable()
-    : primitives(new std::vector<Primitive*>)
+    : primitives(new std::vector<Primitive*>), hasBVH(false)
 {
 }
 
@@ -16,25 +16,43 @@ Traceable::~Traceable()
         delete p;
 
     delete primitives;
+    delete bvh;
 }
 
 void Traceable::ConstructBVH()
 {
-    aabb = new AABB(primitives, 8);
-    hasAABB = true;
+    bvh = new BVH(primitives, 8);
+    hasBVH = true;
 }
 
 RayHit Traceable::Intersect(const Ray& ray)
 {
-    // (Might need to replace this code once BVH is implemented
-    if (hasAABB)
+    if (hasBVH)
     {
-        if (!aabb->Intersect(ray))
-        {
-            return RayHit();
-        }
-    }
+        Triangle::intersectionCount = 0;
+        std::vector<RayHit> hits;
+        bool isIntersected = bvh->Intersect(ray, &hits);
 
+        RayHit closest = RayHit();
+        if (isIntersected)
+        {
+            for (const RayHit& h : hits)
+            {
+                if (h.t == -1.0f)
+                    continue;
+                if (closest.t == -1.0f)
+                {
+                    closest = h;
+                    continue;
+                }
+                if (h.t < closest.t)
+                {
+                    closest = h;
+                }
+            }
+        }
+        return closest;
+    }
 
     std::pair<Primitive*, float> closest = std::pair<Primitive*, float>(nullptr, -1.0f);
     bool miss = true;
@@ -102,13 +120,9 @@ void Traceable::AddModel(const Model& model)
         glm::vec3 i2v3 = glm::vec3(i2.x, i2.y, i2.z);
         glm::vec3 i3v3 = glm::vec3(i3.x, i3.y, i3.z);
 
-        spdlog::trace("Before translation: " + std::to_string(i1v3.x) + ", " + std::to_string(i1v3.y) + ", " + std::to_string(i1v3.z));
-
         i1v3 += model.pos;
         i2v3 += model.pos;
         i3v3 += model.pos;
-
-        spdlog::trace("After translation: " + std::to_string(i1v3.x) + ", " + std::to_string(i1v3.y) + ", " + std::to_string(i1v3.z));
 
         // This pointer is deleted in the traceable's destructor
         Triangle* triangle = new Triangle(i1v3, i2v3, i3v3);

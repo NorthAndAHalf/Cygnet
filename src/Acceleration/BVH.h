@@ -7,6 +7,7 @@
 
 class BVH
 {
+public:
 	BVH(std::vector<Primitive*>* primitives, unsigned int maxTriangles);
 
 	bool Intersect(const Ray& ray, std::vector<RayHit>* hits);

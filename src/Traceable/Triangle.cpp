@@ -1,6 +1,8 @@
 #include "Triangle.h"
 #include "glm/geometric.hpp"
 
+int Triangle::intersectionCount;
+
 Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	: P1(p1), P2(p2), P3(p3)
 {
@@ -41,6 +43,7 @@ float Triangle::IntersectTest(const Ray& ray)
 	float t = d * glm::dot(-n, rop1);
 
 	if (u < 0.0f || v < 0.0f || (u + v) > 1.0f || t <= 0.0f) t = -1.0f;
+	intersectionCount++;
 	return t;
 }
 
