@@ -109,7 +109,7 @@ bool AABB::Intersect(const Ray& ray, std::vector<RayHit>* hits)
 			for (Triangle* t : triangles)
 			{
 				intersected = false;
-				if (t->IntersectTest(ray))
+				if (t->IntersectTest(ray) != -1.0f)
 				{
 					intersected = true;
 					hits->push_back(t->Intersect(ray));

@@ -16,12 +16,11 @@ Traceable::~Traceable()
         delete p;
 
     delete primitives;
-    delete bvh;
 }
 
 void Traceable::ConstructBVH()
 {
-    bvh = new BVH(primitives, 8);
+    bvh = std::make_unique<BVH>(primitives, 8);
     hasBVH = true;
 }
 

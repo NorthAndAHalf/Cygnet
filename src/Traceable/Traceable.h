@@ -27,7 +27,7 @@ public:
 private:
 	std::vector<Primitive*>* primitives; 
 
-	BVH* bvh;
+	std::unique_ptr<BVH> bvh;
 
 	/*
 	Will require an acceleration structure to be stored here in the future
