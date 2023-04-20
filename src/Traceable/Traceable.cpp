@@ -37,14 +37,14 @@ RayHit Traceable::Intersect(const Ray& ray)
         {
             for (const RayHit& h : hits)
             {
-                if (h.t == -1.0f)
+                if (h.miss)
                     continue;
-                if (closest.t == -1.0f)
+                if (closest.miss)
                 {
                     closest = h;
                     continue;
                 }
-                if (h.t < closest.t)
+                if (h.t < closest.t && h.t > 0.0001f)
                 {
                     closest = h;
                 }
@@ -140,5 +140,10 @@ void Traceable::ApplyMaterial(Material* mat)
     {
         p->ApplyMaterial(mat);
     }
+}
+
+unsigned int Traceable::NumberOfPrimitives()
+{
+    return primitives->size();
 }
 

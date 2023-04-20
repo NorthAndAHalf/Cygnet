@@ -13,6 +13,7 @@
 #include "assimp/postprocess.h"
 #include "glm/gtc/constants.hpp"
 #include "Models/Model.h"
+#include "DebugCounter.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -23,10 +24,12 @@
 #define SPD_DEBUG_LEVEL(x);
 #endif
 
+
 Application::Application() {}
 
 void Application::Run()
 {
+	Debug::s_TriCounter = 0;
 	// Setting up spdlog level, spdlog::trace() will only print when in debug configuration, other log functions will work in all configurations
 	SPD_DEBUG_LEVEL(spdlog::set_level(spdlog::level::trace));
 	std::string path = "render.bmp";
@@ -41,7 +44,7 @@ void Application::Run()
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/swan.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/stanford_dragon_vrip.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 
 	if (!pScene)
 	{
@@ -49,7 +52,7 @@ void Application::Run()
 		return;
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, 0.7f, -3.0f), glm::vec3(0.0f, 2.0f, 3.14f), 0.5f);
+	Model model = Model(pScene, glm::vec3(0.0f, -1.0f, -3.0f), glm::vec3(0.0f), 10.0f);
 	//model.Print();
 
 	// BTEC Cornell Box
@@ -154,18 +157,19 @@ void Application::Run()
 	creeper.ApplyMaterial(&sphereMat);
 	traceables->push_back(&creeper);
 	creeper.ConstructBVH();
+	spdlog::info(creeper.NumberOfPrimitives());
 	Triangle::intersectionCount = 0;
 
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 1; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 8; // 1D samples, so the actual sample count will be squared
 
 	// Only works for square images atm
 	// Currently extrememley scuffed btw, I think it works though?
 	float pixelDistance = glm::vec3(2 * (double)1 / (double)width - 1, 2 * (double)1 / (double)height - 1, -focalLength).x - glm::vec3(2 * (double)0 / (double)width - 1, 2 * (double)0 / (double)height - 1, -focalLength).x;
 	float sampleDistance = pixelDistance / samples;
-
+	spdlog::info(Debug::s_TriCounter);
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 	// Temporary loop to trace 1 perspective ray per pixel:
 	for (int y = height - 1; y >= 0; y--)

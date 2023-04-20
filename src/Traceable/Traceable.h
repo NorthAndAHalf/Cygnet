@@ -20,6 +20,7 @@ public:
 
 	void ConstructBVH();
 	void ApplyMaterial(Material* mat);
+	unsigned int NumberOfPrimitives();
 
 	bool ignoreFirst = false;
 	bool hasBVH;

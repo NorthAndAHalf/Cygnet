@@ -1,4 +1,5 @@
 #include "BVH.h"
+#include "DebugCounter.h"
 
 std::shared_ptr<AABB> ConstructAABB(std::vector<Primitive*>* primitives, unsigned int maxTriangles)
 {
@@ -29,3 +30,4 @@ bool BVH::Intersect(const Ray& ray, std::vector<RayHit>* hits)
 {
 	return root->Intersect(ray, hits);
 }
+	

@@ -3,6 +3,7 @@
 #include "glm/common.hpp"
 #include <optional>
 #include "Traceable/Triangle.h"
+#include "DebugCounter.h"
 
 AABB::AABB(std::vector<Primitive*>* primitives)
 {
@@ -88,6 +89,7 @@ AABB::AABB(std::shared_ptr<AABB> _left, std::shared_ptr<AABB> _right)
 	left = _left;
 	right = _right;
 	isLeaf = false;
+
 	min = glm::min(left->min, right->min);
 	max = glm::max(left->max, right->max);
 }
@@ -106,9 +108,9 @@ bool AABB::Intersect(const Ray& ray, std::vector<RayHit>* hits)
 	{
 		if (isLeaf)
 		{
+			intersected = false;
 			for (Triangle* t : triangles)
 			{
-				intersected = false;
 				if (t->IntersectTest(ray) != -1.0f)
 				{
 					intersected = true;
@@ -118,7 +120,9 @@ bool AABB::Intersect(const Ray& ray, std::vector<RayHit>* hits)
 		}
 		else
 		{
-			intersected = left->Intersect(ray, hits) || right->Intersect(ray, hits);
+			bool leftHit = left->Intersect(ray, hits);
+			bool rightHit = right->Intersect(ray, hits);
+			intersected = leftHit || rightHit;
 		}
 	}
 
