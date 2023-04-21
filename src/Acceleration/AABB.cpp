@@ -1,9 +1,7 @@
 #include "AABB.h"
 #include "glm/vec3.hpp"
 #include "glm/common.hpp"
-#include <optional>
 #include "Traceable/Triangle.h"
-#include "DebugCounter.h"
 
 AABB::AABB(std::vector<Triangle*>* primitives)
 {
@@ -11,76 +9,89 @@ AABB::AABB(std::vector<Triangle*>* primitives)
 	left = nullptr;
 	right = nullptr;
 
-	std::optional<float> minX;
-	std::optional<float> maxX;
-	std::optional<float> minY;
-	std::optional<float> maxY;
-	std::optional<float> minZ;
-	std::optional<float> maxZ;
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
+	float minZ;
+	float maxZ;
+
+	bool hasMinX = false;
+	bool hasMaxX = false;
+	bool hasMinY = false;
+	bool hasMaxY = false;
+	bool hasMinZ = false;
+	bool hasMaxZ = false;
 
 	for (Triangle* t : *primitives)
 	{
 		triangles.push_back(t);
 
 		// X
-		if (!minX.has_value())
+		if (!hasMinX)
 		{
-			minX.emplace(t->P1.x);
+			minX = t->P1.x;
+			hasMinX = true;
 		}
 
-		if (t->P1.x < minX.value()) minX.emplace(t->P1.x);
-		if (t->P2.x < minX.value()) minX.emplace(t->P2.x);
-		if (t->P3.x < minX.value()) minX.emplace(t->P3.x);
+		if (t->P1.x < minX) minX = t->P1.x;
+		if (t->P2.x < minX) minX = t->P2.x;
+		if (t->P3.x < minX) minX = t->P3.x;
 
-		if (!maxX.has_value())
+		if (!hasMaxX)
 		{
-			maxX.emplace(t->P1.x);
+			maxX = t->P1.x;
+			hasMaxX = true;
 		}
 
-		if (t->P1.x > maxX.value()) maxX.emplace(t->P1.x);
-		if (t->P2.x > maxX.value()) maxX.emplace(t->P2.x);
-		if (t->P3.x > maxX.value()) maxX.emplace(t->P3.x);
+		if (t->P1.x > maxX) maxX = t->P1.x;
+		if (t->P2.x > maxX) maxX = t->P2.x;
+		if (t->P3.x > maxX) maxX = t->P3.x;
 
 		// Y
-		if (!minY.has_value())
+		if (!hasMinY)
 		{
-			minY.emplace(t->P1.y);
+			minY = t->P1.y;
+			hasMinY = true;
 		}
 
-		if (t->P1.y < minY.value()) minY.emplace(t->P1.y);
-		if (t->P2.y < minY.value()) minY.emplace(t->P2.y);
-		if (t->P3.y < minY.value()) minY.emplace(t->P3.y);
+		if (t->P1.y < minY) minY = t->P1.y;
+		if (t->P2.y < minY) minY = t->P2.y;
+		if (t->P3.y < minY) minY = t->P3.y;
 
-		if (!maxY.has_value())
+		if (!hasMaxY)
 		{
-			maxY.emplace(t->P1.y);
+			maxY = t->P1.y;
+			hasMaxY = true;
 		}
 
-		if (t->P1.y > maxY.value()) maxY.emplace(t->P1.y);
-		if (t->P2.y > maxY.value()) maxY.emplace(t->P2.y);
-		if (t->P3.y > maxY.value()) maxY.emplace(t->P3.y);
+		if (t->P1.y > maxY) maxY = t->P1.y;
+		if (t->P2.y > maxY) maxY = t->P2.y;
+		if (t->P3.y > maxY) maxY = t->P3.y;
 
 		// Z
-		if (!minZ.has_value())
+		if (!hasMinZ)
 		{
-			minZ.emplace(t->P1.z);
+			minZ = t->P1.z;
+			hasMinZ = true;
 		}
 
-		if (t->P1.z < minZ.value()) minZ.emplace(t->P1.z);
-		if (t->P2.z < minZ.value()) minZ.emplace(t->P2.z);
-		if (t->P3.z < minZ.value()) minZ.emplace(t->P3.z);
+		if (t->P1.z < minZ) minZ = t->P1.z;
+		if (t->P2.z < minZ) minZ = t->P2.z;
+		if (t->P3.z < minZ) minZ = t->P3.z;
 
-		if (!maxZ.has_value())
+		if (!hasMaxZ)
 		{
-			maxZ.emplace(t->P1.z);
+			maxZ = t->P1.z;
+			hasMaxZ = true;
 		}
 
-		if (t->P1.z > maxZ.value()) maxZ.emplace(t->P1.z);
-		if (t->P2.z > maxZ.value()) maxZ.emplace(t->P2.z);
-		if (t->P3.z > maxZ.value()) maxZ.emplace(t->P3.z);	
+		if (t->P1.z > maxZ) maxZ = t->P1.z;
+		if (t->P2.z > maxZ) maxZ = t->P2.z;
+		if (t->P3.z > maxZ) maxZ = t->P3.z;	
 	}
-	min = glm::vec3(minX.value(), minY.value(), minZ.value());
-	max = glm::vec3(maxX.value(), maxY.value(), maxZ.value());
+	min = glm::vec3(minX, minY, minZ);
+	max = glm::vec3(maxX, maxY, maxZ);
 }
 
 AABB::AABB(std::shared_ptr<AABB> _left, std::shared_ptr<AABB> _right)

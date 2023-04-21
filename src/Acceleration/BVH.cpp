@@ -1,6 +1,6 @@
 #include "BVH.h"
-#include "DebugCounter.h"
 
+// Sweep SAH Implementation
 void SAHSplit(std::vector<Triangle*>* primitives, std::vector<Triangle*>* v1, std::vector<Triangle*>* v2)
 {	
 	// X axis
@@ -102,7 +102,7 @@ void SAHSplit(std::vector<Triangle*>* primitives, std::vector<Triangle*>* v1, st
 	// Lowest Cost
 	unsigned int bestIndex;
 
-	if (xCost < yCost && xCost < zCost)
+	if (xCost <= yCost && xCost <= zCost)
 	{
 		bestIndex = xIndex;
 		std::sort(primitives->begin(), primitives->end(), [](Triangle* t1, Triangle* t2) -> bool
@@ -110,7 +110,7 @@ void SAHSplit(std::vector<Triangle*>* primitives, std::vector<Triangle*>* v1, st
 				return t1->GetCentroid().x < t2->GetCentroid().x;
 			});
 	}
-	else if (yCost < xCost && yCost < zCost)
+	else if (yCost <= xCost && yCost <= zCost)
 	{
 		bestIndex = yIndex;
 		std::sort(primitives->begin(), primitives->end(), [](Triangle* t1, Triangle* t2) -> bool

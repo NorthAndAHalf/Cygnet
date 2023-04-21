@@ -32,7 +32,6 @@ RayHit Traceable::Intersect(const Ray& ray)
 {
     if (hasBVH)
     {
-        Triangle::intersectionCount = 0;
         std::vector<RayHit> hits;
         bool isIntersected = bvh->Intersect(ray, &hits);
 
