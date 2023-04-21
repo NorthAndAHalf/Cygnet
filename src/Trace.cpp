@@ -21,7 +21,7 @@ glm::vec3 SampleHemisphere(glm::vec3 normal, float& p)
 
 glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
 {
-    if (bounces >= 2) 
+    if (bounces >= 3) 
         return glm::vec3(0.0f);
 
     RayHit hit = scene.Intersect(ray, bounces);

@@ -5,7 +5,7 @@
 #include "Traceable/Triangle.h"
 #include "DebugCounter.h"
 
-AABB::AABB(std::vector<Primitive*>* primitives)
+AABB::AABB(std::vector<Triangle*>* primitives)
 {
 	isLeaf = true;
 	left = nullptr;
@@ -18,9 +18,8 @@ AABB::AABB(std::vector<Primitive*>* primitives)
 	std::optional<float> minZ;
 	std::optional<float> maxZ;
 
-	for (Primitive* p : *primitives)
+	for (Triangle* t : *primitives)
 	{
-		Triangle* t = (Triangle*)p;
 		triangles.push_back(t);
 
 		// X
@@ -132,4 +131,15 @@ bool AABB::Intersect(const Ray& ray, std::vector<RayHit>* hits)
 std::vector<Triangle*>& AABB::GetTriangles()
 {
 	return triangles;
+}
+
+float AABB::GetArea()
+{
+	float area = 0;
+
+	for (Triangle* t : triangles)
+	{
+		area += t->GetArea();
+	}
+	return area;
 }

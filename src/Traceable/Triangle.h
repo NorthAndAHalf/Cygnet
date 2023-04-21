@@ -11,6 +11,9 @@ public:
 	virtual float IntersectTest(const Ray& ray);
 	virtual void ApplyMaterial(Material* _mat) override;
 
+	glm::vec3 GetCentroid();
+	float GetArea();
+
 	glm::vec3 P1;
 	glm::vec3 P2;
 	glm::vec3 P3;

@@ -20,7 +20,11 @@ Traceable::~Traceable()
 
 void Traceable::ConstructBVH()
 {
-    bvh = std::make_unique<BVH>(primitives, 8);
+    std::vector<Triangle*> t;
+    for (Primitive* p : *primitives)
+        t.push_back((Triangle*)p);
+
+    bvh = std::make_unique<BVH>(&t, 8);
     hasBVH = true;
 }
 

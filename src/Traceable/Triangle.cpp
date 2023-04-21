@@ -52,3 +52,22 @@ void Triangle::ApplyMaterial(Material* _mat)
 	mat = _mat;
 }
 
+glm::vec3 Triangle::GetCentroid()
+{
+	float x = (P1.x + P2.x + P3.x) / 3;
+	float y = (P1.y + P2.y + P3.y) / 3;
+	float z = (P1.z + P2.z + P3.z) / 3;
+
+	return glm::vec3(x, y, z);
+}
+
+float Triangle::GetArea()
+{
+	glm::vec3 p2p1 = P2 - P1;
+	glm::vec3 p3p1 = P3 - P1;
+
+	float h = glm::length(glm::cross(p2p1, p3p1)) / p2p1.length();
+	float b = p3p1.length() * h / p2p1.length();
+
+	return 0.5f * b * h;
+}

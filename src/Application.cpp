@@ -44,7 +44,7 @@ void Application::Run()
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/stanford_dragon_vrip.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/stanford_dragon_pbr.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 
 	if (!pScene)
 	{
@@ -52,7 +52,7 @@ void Application::Run()
 		return;
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, -1.0f, -3.0f), glm::vec3(0.0f), 10.0f);
+	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.0f), glm::vec3(0.0f, 3.14f, 0.0f), 0.01f);
 	//model.Print();
 
 	// BTEC Cornell Box
@@ -163,7 +163,7 @@ void Application::Run()
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 8; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 32; // 1D samples, so the actual sample count will be squared
 
 	// Only works for square images atm
 	// Currently extrememley scuffed btw, I think it works though?
@@ -195,8 +195,8 @@ void Application::Run()
 					glm::vec3 jitter = glm::vec3(glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange));
 					s += jitter;
 					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(s));
-					//glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
-					glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
+					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
+					//glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
 
 					radiance += sampleRadiance;
 				}
