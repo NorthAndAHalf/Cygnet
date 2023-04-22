@@ -48,6 +48,7 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
 glm::vec3 DebugTrace(Ray ray, const Scene& scene)
 {
     RayHit hit = scene.Intersect(ray, 0);
+    if (hit.miss) return glm::vec3(0.0f);
     return hit.mat->albedo;
 }
 

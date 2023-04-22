@@ -13,6 +13,7 @@
 #include "assimp/postprocess.h"
 #include "glm/gtc/constants.hpp"
 #include "Models/Model.h"
+#include "Camera.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -50,7 +51,7 @@ void Application::Run()
 		return;
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.5f), glm::vec3(0.0f, 3.14f, 0.0f), 0.01f);
+	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.5f), glm::vec3(0.0f, 0.0f, 0.0f), 0.01f);
 	//model.Print();
 
 	// BTEC Cornell Box
@@ -140,34 +141,25 @@ void Application::Run()
 	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
 
-	// Sphere
-	/*Sphere* sphere = new Sphere(centre, 0.4f);
-	Traceable sphereObj = Traceable();
-	sphereObj.AddPrimitive(sphere);
-	Material sphereMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	sphereObj.ApplyMaterial(&sphereMat);
-	traceables->push_back(&sphereObj);*/
-
-	// Creeper Aw mam
-	Traceable creeper = Traceable();
-	creeper.AddModel(model);
-	Material sphereMat = Material(glm::vec3(1.0f), 0.0f, brdf);
-	creeper.ApplyMaterial(&sphereMat);
-	creeper.ConstructBVH();
-	traceables->push_back(&creeper);
+	Traceable modelTr = Traceable();
+	modelTr.AddModel(model);
+	Material modelMat = Material(glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, brdf);
+	modelTr.ApplyMaterial(&modelMat);
+	modelTr.ConstructBVH();
+	traceables->push_back(&modelTr);
 
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 48; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 1; // 1D samples, so the actual sample count will be squared
 
-	// Only works for square images atm
-	// Currently extrememley scuffed btw, I think it works though?
+	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, focalLength);
+
 	float pixelDistance = glm::vec3(2 * (double)1 / (double)width - 1, 2 * (double)1 / (double)height - 1, -focalLength).x - glm::vec3(2 * (double)0 / (double)width - 1, 2 * (double)0 / (double)height - 1, -focalLength).x;
 	float sampleDistance = pixelDistance / samples;
 	
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
-	// Temporary loop to trace 1 perspective ray per pixel:
+
 	for (int y = height - 1; y >= 0; y--)
 	{
 		// Percentage counter
@@ -186,11 +178,7 @@ void Application::Run()
 			{
 				for (int j = 0; j < samples; j++)
 				{
-					glm::vec3 s = glm::vec3(pixelCoord.x + (sampleDistance * j), pixelCoord.y + (sampleDistance * i), pixelCoord.z);
-					float jitterRange = sampleDistance / 2;
-					glm::vec3 jitter = glm::vec3(glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange));
-					s += jitter;
-					Ray ray = Ray(glm::vec3(0.0f), glm::normalize(s));
+					Ray ray = camera.GetSample(samples, x, y, i, j);
 					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
 					//glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
 
