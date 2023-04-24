@@ -15,9 +15,9 @@ Model::Model(aiMesh* aim, glm::vec3 _pos, glm::vec3 _rot, float _scale)
 
 	for (int i = 0; i < aim->mNumFaces; i++)
 	{
-		indices.push_back(aim->mFaces[i].mIndices[2]);
-		indices.push_back(aim->mFaces[i].mIndices[1]);
 		indices.push_back(aim->mFaces[i].mIndices[0]);
+		indices.push_back(aim->mFaces[i].mIndices[1]);
+		indices.push_back(aim->mFaces[i].mIndices[2]);
 	}
 }
 
@@ -40,9 +40,9 @@ Model::Model(const aiScene* ais, glm::vec3 _pos, glm::vec3 _rot, float _scale)
 
 		for (int i = 0; i < aim->mNumFaces; i++)
 		{
-			indices.push_back(aim->mFaces[i].mIndices[2] + previousVertices);
-			indices.push_back(aim->mFaces[i].mIndices[1] + previousVertices);
 			indices.push_back(aim->mFaces[i].mIndices[0] + previousVertices);
+			indices.push_back(aim->mFaces[i].mIndices[1] + previousVertices);
+			indices.push_back(aim->mFaces[i].mIndices[2] + previousVertices);
 		}
 		previousVertices += aim->mNumVertices;
 	}

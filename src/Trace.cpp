@@ -49,6 +49,7 @@ glm::vec3 DebugTrace(Ray ray, const Scene& scene)
 {
     RayHit hit = scene.Intersect(ray, 0);
     if (hit.miss) return glm::vec3(0.0f);
+    glm::vec3 n = hit.normal;
     return hit.mat->albedo;
 }
 

@@ -35,15 +35,15 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 500;
-	const int height = 500;
+	const int width = 250;
+	const int height = 250;
 	float focalLength = 1.7f;
 
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/stanford_dragon_pbr.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/minecraft_creeper.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 
 	if (!pScene)
 	{
@@ -51,7 +51,7 @@ void Application::Run()
 		return;
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.5f), glm::vec3(0.0f, 0.0f, 0.0f), 0.01f);
+	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.0f), glm::vec3(0.0f, 1.05f, 1.052f), 0.03f);
 	//model.Print();
 
 	// BTEC Cornell Box
@@ -71,8 +71,8 @@ void Application::Run()
 	BRDF* brdf = &BRDF();
 
 	// Floor
-	Triangle* floor1 = new Triangle(v1, v4, v8);
-	Triangle* floor2 = new Triangle(v8, v5, v1);
+	Triangle* floor1 = new Triangle(v1, v8, v4);
+	Triangle* floor2 = new Triangle(v8, v1, v5);
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
@@ -81,8 +81,8 @@ void Application::Run()
 	traceables->push_back(&floor);
 
 	// Left Wall
-	Triangle* wallL1 = new Triangle(v1, v2, v3);
-	Triangle* wallL2 = new Triangle(v3, v4, v1);
+	Triangle* wallL1 = new Triangle(v1, v3, v2);
+	Triangle* wallL2 = new Triangle(v3, v1, v4);
 	Traceable leftWall = Traceable();
 	leftWall.AddPrimitive(wallL1);
 	leftWall.AddPrimitive(wallL2);
@@ -91,8 +91,8 @@ void Application::Run()
 	traceables->push_back(&leftWall);
 
 	// Right Wall
-	Triangle* wallR1 = new Triangle(v7, v6, v5);
-	Triangle* wallR2 = new Triangle(v5, v8, v7);
+	Triangle* wallR1 = new Triangle(v7, v5, v6);
+	Triangle* wallR2 = new Triangle(v5, v7, v8);
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
 	rightWall.AddPrimitive(wallR2);
@@ -101,8 +101,8 @@ void Application::Run()
 	traceables->push_back(&rightWall);
 
 	// Back Wall
-	Triangle* wallB1 = new Triangle(v4, v3, v7);
-	Triangle* wallB2 = new Triangle(v7, v8, v4);
+	Triangle* wallB1 = new Triangle(v4, v7, v3);
+	Triangle* wallB2 = new Triangle(v7, v4, v8);
 	Traceable backWall = Traceable();
 	backWall.AddPrimitive(wallB1);
 	backWall.AddPrimitive(wallB2);
@@ -111,8 +111,8 @@ void Application::Run()
 	traceables->push_back(&backWall);
 
 	// Front Wall
-	Triangle* wallF1 = new Triangle(v6, v2, v1);
-	Triangle* wallF2 = new Triangle(v1, v5, v6);
+	Triangle* wallF1 = new Triangle(v6, v1, v2);
+	Triangle* wallF2 = new Triangle(v1, v6, v5);
 	Traceable frontWall = Traceable();
 	frontWall.AddPrimitive(wallF1);
 	frontWall.AddPrimitive(wallF2);
@@ -122,8 +122,8 @@ void Application::Run()
 	traceables->push_back(&frontWall);
 
 	// Ceiling
-	Triangle* ceil1 = new Triangle(v7, v3, v2);
-	Triangle* ceil2 = new Triangle(v2, v6, v7);
+	Triangle* ceil1 = new Triangle(v7, v2, v3);
+	Triangle* ceil2 = new Triangle(v2, v7, v6);
 	Traceable ceiling = Traceable();
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
@@ -151,7 +151,7 @@ void Application::Run()
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 1; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 32; // 1D samples, so the actual sample count will be squared
 
 	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, focalLength);
 

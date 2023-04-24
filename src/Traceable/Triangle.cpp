@@ -1,6 +1,8 @@
 #include "Triangle.h"
 #include "glm/geometric.hpp"
 
+// Triangle intersection test adapted from Inigo Quilez's shadertoy under the MIT license https://www.shadertoy.com/view/MlGcDz
+
 Triangle::Triangle(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
 	: P1(p1), P2(p2), P3(p3)
 {
@@ -19,9 +21,7 @@ RayHit Triangle::Intersect(const Ray& ray)
 	float v = d * glm::dot(q, p2p1);
 	float t = d * glm::dot(-n, rop1);
 
-	// During test the normal was inverted, I think it's something to do with winding order but for now I'm just inverting it
-	// Might just keep this if nothing breaks
-	glm::vec3 normal = glm::normalize(- n);
+	glm::vec3 normal = glm::normalize(n);
 	if (u < 0.0f || v < 0.0f || (u + v) > 1.0f || t <= 0.0f) t = -1.0f;
 	if (t <= 0.0f) return RayHit();
 	return RayHit(ray, ray.At(t), normal, mat, t);

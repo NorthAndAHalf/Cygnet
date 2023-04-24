@@ -19,7 +19,7 @@ Ray Camera::GetSample(uint16_t samples, uint16_t x, uint16_t y, uint16_t sx, uin
 
 	float jitterRange = sampleDistance / 2;
 	glm::vec3 jitter = glm::vec3(glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange), glm::linearRand(-jitterRange, jitterRange));
-	s += jitter;
+	//s += jitter;
 
 	glm::vec4 sv4 = glm::vec4(s.s, s.y, s.z, 1.0f);
 	sv4 = glm::rotateX(sv4, glm::radians(tilt));
