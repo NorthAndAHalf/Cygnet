@@ -4,5 +4,11 @@
 
 struct BRDF
 {
-	glm::vec3 Calculate(const glm::vec3& outDir, const glm::vec3& normal, const glm::vec3& inDir, const glm::vec3& albedo) const;
+	BRDF(glm::vec3 _baseReflectance, float _roughness, float _metallic);
+
+	glm::vec3 Calculate(const glm::vec3& rayDir, const glm::vec3& normal, const glm::vec3& lightDir, const glm::vec3& albedo) const;
+
+	glm::vec3 baseReflectance;
+	float roughness;
+	float metallic;
 };

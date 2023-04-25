@@ -1,9 +1,12 @@
 #include "BRDF.h"
 #include "glm/gtc/constants.hpp"
+#include "CookTorrance.h"
 
-glm::vec3 BRDF::Calculate(const glm::vec3& outDir, const glm::vec3& normal, const glm::vec3& inDir, const glm::vec3& albedo) const
+BRDF::BRDF(glm::vec3 _baseReflectance, float _roughness, float _metallic)
+	: baseReflectance(_baseReflectance), roughness(_roughness), metallic(_metallic)
+{}
+
+glm::vec3 BRDF::Calculate(const glm::vec3& rayDir, const glm::vec3& normal, const glm::vec3& lightDir, const glm::vec3& albedo) const
 {
-	return albedo / glm::pi<float>();
+	return CookTorrance(rayDir, lightDir, normal, albedo, baseReflectance, roughness, metallic);
 }
-
-// When implementing more complex BRDFs, remember to think about ray direction, does the BRDF expecting an incoming ray or an outgoing ray? Same with incoming light

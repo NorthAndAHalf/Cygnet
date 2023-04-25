@@ -7,13 +7,13 @@
 
 glm::vec3 SampleHemisphere(glm::vec3 normal, float& p)
 {
-    // Uniform distribution currently, no importance sampling
-
-    // Uniformly sample the unit sphere
+    // Initially generate a uniform hemispere sample
     glm::vec3 dir = glm::normalize(glm::vec3(glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f)));
 
     // If dir is not inside the hemisphere around the normal, invert it so it is
     if (glm::dot(dir, normal) < 0.0f) dir = -dir;
+
+
     p = glm::max(glm::dot(dir, normal) / glm::pi<float>(), 0.001f);
 
     return dir;
@@ -39,7 +39,7 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
     glm::vec3 dir = SampleHemisphere(hit.normal, p);
 
     ray = Ray(hit.pos, dir);
-    glm::vec3 brdf = hit.mat->brdf->Calculate(-ray.direction, hit.normal, -dir, hit.mat->albedo);
+    glm::vec3 brdf = hit.mat->brdf->Calculate(ray.direction, hit.normal, -dir, hit.mat->albedo);
     radiance += brdf * TracePath(ray, scene, bounces) * glm::dot(hit.normal, ray.direction) / p;
 
     return radiance;
@@ -53,5 +53,3 @@ glm::vec3 DebugTrace(Ray ray, const Scene& scene)
     return hit.mat->albedo;
 }
 
-// Remember to show examples of Trace() vs TracePath() in diss
-// Talk about timings too

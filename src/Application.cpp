@@ -68,7 +68,7 @@ void Application::Run()
 	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
-	BRDF* brdf = &BRDF();
+	BRDF* brdf = &BRDF(glm::vec3(0.8f), 1.0f, 0.0f);
 
 	// Floor
 	Triangle* floor1 = new Triangle(v1, v8, v4);
