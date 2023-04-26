@@ -2,9 +2,13 @@
 
 #include "glm/gtc/constants.hpp"
 #include "glm/geometric.hpp"
+#include "glm/trigonometric.hpp"
 
-inline glm::vec3 CookTorrance(glm::vec3 rayDir, glm::vec3 lightDir, glm::vec3 normal, glm::vec3 albedo, glm::vec3 baseReflection, float roughness, float metallic)
+glm::vec3 CookTorrance(glm::vec3 rayDir, glm::vec3 lightDir, glm::vec3 normal, glm::vec3 albedo, float roughness, float metallic)
 {
+	glm::vec3 F0 = glm::vec3(0.04f);
+	F0 = glm::mix(F0, albedo, metallic);
+
 	glm::vec3 v = -rayDir;
 	v = glm::normalize(v);
 	lightDir = glm::normalize(lightDir);
@@ -13,7 +17,7 @@ inline glm::vec3 CookTorrance(glm::vec3 rayDir, glm::vec3 lightDir, glm::vec3 no
 
 	float D = Dist(normal, h, roughness);
 	float G = Geo(normal, v, lightDir, roughness);
-	glm::vec3 F = Fresnel(h, v, baseReflection);
+	glm::vec3 F = Fresnel(h, v, F0);
 
 	glm::vec3 kd = glm::vec3(1.0f) - F;
 	kd *= 1.0f - metallic;
@@ -28,11 +32,11 @@ inline glm::vec3 CookTorrance(glm::vec3 rayDir, glm::vec3 lightDir, glm::vec3 no
 inline glm::vec3 Fresnel(glm::vec3 h, glm::vec3 v, glm::vec3 baseReflect)
 {
 	float hdotv = glm::dot(h, v);
-	return baseReflect + (glm::vec3(1.0f) - baseReflect) * glm::vec3(glm::pow(1 - hdotv, 5));
+	return baseReflect + (1.0f - baseReflect) * glm::vec3(glm::pow(1.0f - hdotv, 5.0f));
 }
 
 // GGX Normal Distribution
-inline float Dist(glm::vec3 n, glm::vec3 h, float roughness)
+float Dist(glm::vec3 n, glm::vec3 h, float roughness)
 {
 	float ndoth = glm::max(glm::dot(n, h), 0.00001f);
 	float roughnessSquared = roughness * roughness;

@@ -12,9 +12,6 @@ Traceable::Traceable()
 
 Traceable::~Traceable()
 {
-    for (Primitive* p : *primitives)
-        delete p;
-
     delete primitives;
 }
 

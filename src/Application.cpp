@@ -68,7 +68,7 @@ void Application::Run()
 	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
-	BRDF* brdf = &BRDF(glm::vec3(0.8f), 1.0f, 0.0f);
+	BRDF* brdf = &BRDF(1.0f, 0.0f);
 
 	// Floor
 	Triangle* floor1 = new Triangle(v1, v8, v4);
@@ -145,8 +145,16 @@ void Application::Run()
 	modelTr.AddModel(model);
 	Material modelMat = Material(glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, brdf);
 	modelTr.ApplyMaterial(&modelMat);
-	modelTr.ConstructBVH();
-	traceables->push_back(&modelTr);
+	//modelTr.ConstructBVH();
+	//traceables->push_back(&modelTr);
+
+	Traceable sphere = Traceable();
+	Sphere sphereP = Sphere(glm::vec3(0.0f, 0.0f, -1.7f), 0.3f);
+	sphere.AddPrimitive(&sphereP);
+	BRDF metal = BRDF(0.0f, 1.0f);
+	Material sphereMat = Material(glm::vec3(1.0f, 0.71f, 0.29f), 0.0f, &metal);
+	sphere.ApplyMaterial(&sphereMat);
+	traceables->push_back(&sphere);
 
 	Scene* scene = new Scene(traceables);
 
