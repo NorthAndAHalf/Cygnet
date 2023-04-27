@@ -35,9 +35,9 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 250;
-	const int height = 250;
-	float focalLength = 1.7f;
+	const int width = 1000;
+	const int height = 1000;
+	float focalLength = 1.6f;
 
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
 
@@ -119,7 +119,7 @@ void Application::Run()
 	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	frontWall.ApplyMaterial(&wallFMat);
 	frontWall.ignoreFirst = true;
-	traceables->push_back(&frontWall);
+	//traceables->push_back(&frontWall);
 
 	// Ceiling
 	Triangle* ceil1 = new Triangle(v7, v2, v3);
@@ -137,7 +137,7 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	Material lightMat = Material(glm::vec3(1.0f), 20.0f, &brdf);
+	Material lightMat = Material(glm::vec3(1.0f), 30.0f, &brdf);
 	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
 
@@ -164,15 +164,18 @@ void Application::Run()
 	sphere2.ApplyMaterial(&sphere2Mat);
 	traceables->push_back(&sphere2);
 
+	Traceable sphereLight = Traceable();
+	Sphere sphereLP = Sphere(glm::vec3(0.5f, 0.5f, 0.0f), 0.3f);
+	sphereLight.AddPrimitive(&sphereLP);
+	sphereLight.ApplyMaterial(&lightMat);
+	traceables->push_back(&sphereLight);
+
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 16; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 48; // 1D samples, so the actual sample count will be squared
 
-	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, focalLength);
-
-	float pixelDistance = glm::vec3(2 * (double)1 / (double)width - 1, 2 * (double)1 / (double)height - 1, -focalLength).x - glm::vec3(2 * (double)0 / (double)width - 1, 2 * (double)0 / (double)height - 1, -focalLength).x;
-	float sampleDistance = pixelDistance / samples;
+	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, -20.0f, focalLength);
 	
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 
