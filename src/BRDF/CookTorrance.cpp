@@ -59,3 +59,14 @@ inline float SchlickGeo(glm::vec3 n, glm::vec3 v, float roughness)
 	float ndotv = glm::max(glm::dot(n, v), 0.00001f);
 	return ndotv / (ndotv * (1 - roughness) + roughness);
 }
+
+float GGXpdf(glm::vec3 wi, glm::vec3 wo, float roughness)
+{
+	// Expects pre squared roughness
+	glm::vec3 wg(0.0f, 1.0f, 0.0f);
+	glm::vec3 wm = glm::normalize(wi + wo);
+	float cosTheta = glm::dot(wg, wm);
+	float exp = (roughness - 1.0f) * cosTheta * cosTheta + 1.0f;
+	float d = roughness / (glm::pi<float>() * exp * exp);
+	return (d * glm::dot(wm, wg) / (4.0f * glm::dot(wo, wm)));
+}

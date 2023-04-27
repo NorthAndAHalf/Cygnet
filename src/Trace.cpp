@@ -10,65 +10,59 @@
 
 glm::vec3 SampleHemisphere(glm::vec3 v, glm::vec3 normal, BRDF* brdf, float& pdf)
 {
-    /*
-    // Inversion method importance sampling of the GGX NDF
-    float roughness = brdf->roughness * brdf->roughness;
-    roughness *= roughness;
-
-    float u1 = glm::linearRand(0.0f, 1.0f);
-    float u2 = glm::linearRand(0.0f, 1.0f);
-    // old
-    float theta = glm::atan(glm::sqrt(-roughness * glm::log(1 - u1)));
-    float phi = 2 * glm::pi<float>() * u2;
-
-    float x = glm::sin(theta) * glm::cos(phi);
-    float y = glm::sin(theta) * glm::sin(phi);
-    float z = glm::cos(theta);
-
-    glm::vec3 T = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), normal));
-    glm::mat3x3 tangentSpaceTransform(T, normal, glm::cross(T, normal));
-
-    glm::vec3 dir = glm::normalize(tangentSpaceTransform * glm::vec3(x, y, z));
-    glm::vec3 H = glm::normalize(v + dir);
-    float D = Dist(normal, H, brdf->roughness); // Dist performs the squares on the roughness, do not pass in the squared values
-
-    float ndoth = glm::max(glm::dot(normal, H), 0.00001f);
-    float vdoth = glm::max(glm::dot(v, H), 0.00001f);
-    float pdfH = 1.0f / (2.0f * glm::pi<float>() * (1.0f - ndoth * ndoth) * glm::sqrt(roughness));
-
-    pdf = D * ndoth / (4.0f * vdoth * pdfH);
-    return dir;
-
-    // new
-    float theta = glm::acos(glm::sqrt((1.0f - u1) / u1 * (roughness - 1.0f) + 1.0f));
-    float phi = 2.0f * glm::pi<float>() * u2;
-    
-    float x = glm::sin(theta) * glm::cos(phi);
-    float y = glm::cos(theta);
-    float z = glm::sin(theta) * glm::sin(phi);
-
-    glm::vec3 wm(x, y, z);
-    glm::vec3 wi = 2.0f * glm::dot(-v, wm) * wm - -v;
-
-    float rotTheta = glm::acos(glm::dot(wi, normal));
-    glm::vec3 rotAxis = glm::cross(wi, normal);
-    wi = glm::rotate(wi, rotTheta, rotAxis);
-    pdf = (Dist(normal, wm, roughness) * glm::dot(wm, glm::vec3(0.0f, 1.0f, 0.0f))) / 4.0f * glm::dot(-v, wm);
-    return wi;
-    */
     // Initially generate a uniform hemispere sample
     glm::vec3 dir = glm::normalize(glm::vec3(glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f)));
 
     // If dir is not inside the hemisphere around the normal, invert it so it is
     if (glm::dot(dir, normal) < 0.0f) dir = -dir;
 
+    glm::vec3 reflect = glm::reflect(v, normal);
+    float a2 = brdf->roughness * brdf->roughness;
+    a2 *= a2;
 
-    p = glm::max(glm::dot(dir, normal) / glm::pi<float>(), 0.001f);
+    glm::vec3 h = glm::normalize(v + dir);
 
-    return dir;
+    glm::vec3 wi = glm::mix(dir, reflect, 1.0f - a2);
+    pdf = glm::max(1.0f / (2.0f * glm::pi<float>()) * a2, 0.00001f);
+    return wi;
 }
 
-glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
+/*
+glm::vec3 SampleHemisphere(glm::vec3 v, glm::vec3 normal, BRDF* brdf, float& pdf)
+{
+    // Initially generate a uniform hemispere sample
+    glm::vec3 dir = glm::normalize(glm::vec3(glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f), glm::linearRand(-1.0f, 1.0f)));
+
+    // If dir is not inside the hemisphere around the normal, invert it so it is
+    if (glm::dot(dir, normal) < 0.0f) dir = -dir;
+
+    pdf = 1.0f / (2.0f * glm::pi<float>());
+    return dir;
+}
+/*
+/*glm::vec3 SampleHemisphere(glm::vec3 v, glm::vec3 normal, BRDF* brdf, float& pdf)
+{
+    float u = glm::linearRand(0.0f, 1.0f);
+    float u1 = glm::linearRand(0.0f, 1.0f);
+    float a = brdf->roughness * brdf->roughness;
+    float a2 = a * a;
+
+    float theta = glm::acos(glm::sqrt((1.0f - u) / u * (a2 - 1.0f) + 1.0f));
+    float phi = 2.0f * glm::pi<float>() * u1;
+
+    float x = glm::sin(theta) * glm::cos(phi);
+    float y = glm::cos(theta);
+    float z = glm::sin(theta) * glm::sin(phi);
+    glm::vec3 wm(x, y, z);
+    glm::vec3 wi = 2.0f * glm::dot(v, wm) * wm - v;
+    float rotTheta = glm::acos(glm::dot(wi, normal));
+    glm::vec3 rotAxis = glm::cross(wi, normal);
+    wi = glm::rotate(wi, rotTheta, rotAxis);
+    pdf = GGXpdf(wi, -v, a2);
+    return wi;
+}
+*/
+glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces, glm::vec3 throughput)
 {
     if (bounces >= 4) 
         return glm::vec3(0.0f);
@@ -88,8 +82,9 @@ glm::vec3 TracePath(Ray ray, const Scene& scene, uint8_t bounces)
     glm::vec3 dir = SampleHemisphere(ray.direction, hit.normal, hit.mat->brdf, pdf);
 
     glm::vec3 brdf = hit.mat->brdf->Calculate(ray.direction, hit.normal, -dir, hit.mat->albedo);
+    throughput *= brdf * glm::dot(hit.normal, dir) / pdf;
     ray = Ray(hit.pos, dir);
-    radiance += brdf * TracePath(ray, scene, bounces) * glm::dot(hit.normal, ray.direction) / pdf;
+    radiance += throughput * TracePath(ray, scene, bounces, throughput);
 
     return radiance;
 }

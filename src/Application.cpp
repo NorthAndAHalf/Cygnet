@@ -68,7 +68,7 @@ void Application::Run()
 	glm::vec3 v7 = centre + glm::vec3( 1.0f,  1.0f, -1.0f);
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
-	BRDF* brdf = &BRDF(1.0f, 0.0f);
+	BRDF brdf = BRDF(1.0f, 0.0f);
 
 	// Floor
 	Triangle* floor1 = new Triangle(v1, v8, v4);
@@ -76,7 +76,7 @@ void Application::Run()
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
-	Material floorMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	Material floorMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	floor.ApplyMaterial(&floorMat);
 	traceables->push_back(&floor);
 
@@ -86,7 +86,7 @@ void Application::Run()
 	Traceable leftWall = Traceable();
 	leftWall.AddPrimitive(wallL1);
 	leftWall.AddPrimitive(wallL2);
-	Material wallLMat = Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, brdf);
+	Material wallLMat = Material(glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, &brdf);
 	leftWall.ApplyMaterial(&wallLMat);
 	traceables->push_back(&leftWall);
 
@@ -96,7 +96,7 @@ void Application::Run()
 	Traceable rightWall = Traceable();
 	rightWall.AddPrimitive(wallR1);
 	rightWall.AddPrimitive(wallR2);
-	Material wallRMat = Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, brdf);
+	Material wallRMat = Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, &brdf);
 	rightWall.ApplyMaterial(&wallRMat);
 	traceables->push_back(&rightWall);
 
@@ -106,7 +106,7 @@ void Application::Run()
 	Traceable backWall = Traceable();
 	backWall.AddPrimitive(wallB1);
 	backWall.AddPrimitive(wallB2);
-	Material wallBMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	Material wallBMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	backWall.ApplyMaterial(&wallBMat);
 	traceables->push_back(&backWall);
 
@@ -116,7 +116,7 @@ void Application::Run()
 	Traceable frontWall = Traceable();
 	frontWall.AddPrimitive(wallF1);
 	frontWall.AddPrimitive(wallF2);
-	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	frontWall.ApplyMaterial(&wallFMat);
 	frontWall.ignoreFirst = true;
 	traceables->push_back(&frontWall);
@@ -127,7 +127,7 @@ void Application::Run()
 	Traceable ceiling = Traceable();
 	ceiling.AddPrimitive(ceil1);
 	ceiling.AddPrimitive(ceil2);
-	Material ceilMat = Material(glm::vec3(1.0f), 0.0f, brdf);
+	Material ceilMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	ceiling.ApplyMaterial(&ceilMat);
 	traceables->push_back(&ceiling);
 
@@ -137,29 +137,37 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	Material lightMat = Material(glm::vec3(1.0f), 30.0f, brdf);
+	Material lightMat = Material(glm::vec3(1.0f), 20.0f, &brdf);
 	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
 
 	Traceable modelTr = Traceable();
 	modelTr.AddModel(model);
-	Material modelMat = Material(glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, brdf);
+	Material modelMat = Material(glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, &brdf);
 	modelTr.ApplyMaterial(&modelMat);
 	//modelTr.ConstructBVH();
 	//traceables->push_back(&modelTr);
 
-	Traceable sphere = Traceable();
-	Sphere sphereP = Sphere(glm::vec3(0.0f, 0.0f, -1.7f), 0.3f);
-	sphere.AddPrimitive(&sphereP);
-	BRDF metal = BRDF(0.0f, 1.0f);
-	Material sphereMat = Material(glm::vec3(1.0f, 0.71f, 0.29f), 0.0f, &metal);
-	sphere.ApplyMaterial(&sphereMat);
-	traceables->push_back(&sphere);
+	Traceable sphere1 = Traceable();
+	Sphere sphereP1 = Sphere(glm::vec3(-0.5f, -0.7f, -2.0f), 0.3f);
+	sphere1.AddPrimitive(&sphereP1);
+	BRDF metal = BRDF(1.0f, 1.0f);
+	Material sphere1Mat = Material(glm::vec3(0.95f, 0.64f, 0.54f), 0.0f, &metal);
+	sphere1.ApplyMaterial(&sphere1Mat);
+	traceables->push_back(&sphere1);
+
+	Traceable sphere2 = Traceable();
+	Sphere sphereP2 = Sphere(glm::vec3(0.5f, -0.7f, -2.0f), 0.3f);
+	sphere2.AddPrimitive(&sphereP2);
+	BRDF dialectric = BRDF(1.0f, 0.0f);
+	Material sphere2Mat = Material(glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, &dialectric);
+	sphere2.ApplyMaterial(&sphere2Mat);
+	traceables->push_back(&sphere2);
 
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
-	uint8_t samples = 32; // 1D samples, so the actual sample count will be squared
+	uint8_t samples = 16; // 1D samples, so the actual sample count will be squared
 
 	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f, focalLength);
 
@@ -187,7 +195,7 @@ void Application::Run()
 				for (int j = 0; j < samples; j++)
 				{
 					Ray ray = camera.GetSample(samples, x, y, i, j);
-					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0);
+					glm::vec3 sampleRadiance = TracePath(ray, *scene, 0, glm::vec3(1.0f));
 					//glm::vec3 sampleRadiance = DebugTrace(ray, *scene);
 
 					radiance += sampleRadiance;
