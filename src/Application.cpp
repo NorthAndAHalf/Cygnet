@@ -35,15 +35,15 @@ void Application::Run()
 
 	spdlog::info("Starting");
 
-	const int width = 1000;
-	const int height = 1000;
-	float focalLength = 1.6f;
+	const int width = 500;
+	const int height = 500;
+	float focalLength = 1.7f;
 
 	std::vector<Traceable*>* traceables = new std::vector<Traceable*>();
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/minecraft_creeper.glb", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* pScene = importer.ReadFile("C:/Users/lewis/Downloads/stanford_dragon_vrip_res_4.glb", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
 	if (!pScene)
 	{
@@ -51,10 +51,9 @@ void Application::Run()
 		return;
 	}
 
-	Model model = Model(pScene, glm::vec3(0.0f, -0.5f, -2.0f), glm::vec3(0.0f, 1.05f, 1.052f), 0.03f);
-	//model.Print();
+	Model model = Model(pScene, glm::vec3(0.1f, -1.5f, -1.5f), glm::vec3(0.0f, 0.3f, 0.0f), 7.0f);
 
-	// BTEC Cornell Box
+	// Cornell Box
 
 	glm::vec3 centre = glm::vec3(0.0f, 0.0f, -2.0f);
 
@@ -69,17 +68,17 @@ void Application::Run()
 	glm::vec3 v8 = centre + glm::vec3( 1.0f, -1.0f, -1.0f);
 
 	BRDF brdf = BRDF(1.0f, 0.0f);
-
+	
 	// Floor
-	Triangle* floor1 = new Triangle(v1, v8, v4);
-	Triangle* floor2 = new Triangle(v8, v1, v5);
+	Triangle* floor1 = new Triangle(v1 + glm::vec3(-10.0f, 0.0f, 2.0f), v8 + glm::vec3(10.0f, 0.0f, -20.0f), v4 + glm::vec3(-10.0f, 0.0f, -20.0f));
+	Triangle* floor2 = new Triangle(v8 + glm::vec3(10.0f, 0.0f, -20.0f), v1 + glm::vec3(-10.0f, 0.0f, 2.0f), v5 + glm::vec3(10.0f, 0.0f, 2.0f));
 	Traceable floor = Traceable();
 	floor.AddPrimitive(floor1);
 	floor.AddPrimitive(floor2);
 	Material floorMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	floor.ApplyMaterial(&floorMat);
 	traceables->push_back(&floor);
-
+	/*
 	// Left Wall
 	Triangle* wallL1 = new Triangle(v1, v3, v2);
 	Triangle* wallL2 = new Triangle(v3, v1, v4);
@@ -119,7 +118,7 @@ void Application::Run()
 	Material wallFMat = Material(glm::vec3(1.0f), 0.0f, &brdf);
 	frontWall.ApplyMaterial(&wallFMat);
 	frontWall.ignoreFirst = true;
-	//traceables->push_back(&frontWall);
+	traceables->push_back(&frontWall);
 
 	// Ceiling
 	Triangle* ceil1 = new Triangle(v7, v2, v3);
@@ -137,45 +136,48 @@ void Application::Run()
 	Traceable light = Traceable();
 	light.AddPrimitive(light1);
 	light.AddPrimitive(light2);
-	Material lightMat = Material(glm::vec3(1.0f), 30.0f, &brdf);
+	Material lightMat = Material(glm::vec3(1.0f), 10.0f, &brdf);
 	light.ApplyMaterial(&lightMat);
 	traceables->push_back(&light);
-
-	Traceable modelTr = Traceable();
-	modelTr.AddModel(model);
-	Material modelMat = Material(glm::vec3(0.7f, 0.7f, 1.0f), 0.0f, &brdf);
-	modelTr.ApplyMaterial(&modelMat);
-	//modelTr.ConstructBVH();
-	//traceables->push_back(&modelTr);
-
-	Traceable sphere1 = Traceable();
-	Sphere sphereP1 = Sphere(glm::vec3(-0.5f, -0.7f, -2.0f), 0.3f);
+	*/
+	/*Traceable sphere1 = Traceable();
+	Sphere sphereP1 = Sphere(glm::vec3(-0.6f, -0.7f, -1.5f), 0.2f);
 	sphere1.AddPrimitive(&sphereP1);
-	BRDF metal = BRDF(1.0f, 1.0f);
-	Material sphere1Mat = Material(glm::vec3(0.95f, 0.64f, 0.54f), 0.0f, &metal);
+	BRDF metal = BRDF(1.0f, 0.0f);
+	Material sphere1Mat = Material(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, &metal);
 	sphere1.ApplyMaterial(&sphere1Mat);
-	traceables->push_back(&sphere1);
+	traceables->push_back(&sphere1);*/
 
 	Traceable sphere2 = Traceable();
-	Sphere sphereP2 = Sphere(glm::vec3(0.5f, -0.7f, -2.0f), 0.3f);
+	sphere2.ignoreFirst = true;
+	Sphere sphereP2 = Sphere(glm::vec3(0.0f, -0.3f, -1.4f), 0.2f);
 	sphere2.AddPrimitive(&sphereP2);
 	BRDF dialectric = BRDF(1.0f, 0.0f);
-	Material sphere2Mat = Material(glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, &dialectric);
+	Material sphere2Mat = Material(glm::vec3(1.0f, 1.0f, 1.0f), 10.0f, &dialectric);
 	sphere2.ApplyMaterial(&sphere2Mat);
 	traceables->push_back(&sphere2);
 
-	Traceable sphereLight = Traceable();
-	Sphere sphereLP = Sphere(glm::vec3(0.5f, 0.5f, 0.0f), 0.3f);
-	sphereLight.AddPrimitive(&sphereLP);
-	sphereLight.ApplyMaterial(&lightMat);
-	traceables->push_back(&sphereLight);
+	/*Traceable sphere3 = Traceable();
+	Sphere sphereP3 = Sphere(glm::vec3(0.6f, -0.7f, -1.5f), 0.2f);
+	sphere3.AddPrimitive(&sphereP3);
+	BRDF dialectric2 = BRDF(1.0f, 0.0f);
+	Material sphere3Mat = Material(glm::vec3(0.0f, 0.0f, 1.0f), 0.0f, &dialectric2);
+	sphere3.ApplyMaterial(&sphere3Mat);
+	traceables->push_back(&sphere3);*/
+
+	Traceable modelTr = Traceable();
+	modelTr.AddModel(model);
+	Material modelMat = Material(glm::vec3(1.0f, 0.0f, 1.0f), 0.0f, &brdf);
+	modelTr.ApplyMaterial(&modelMat);
+	modelTr.ConstructBVH();
+	traceables->push_back(&modelTr);
 
 	Scene* scene = new Scene(traceables);
 
 	uint8_t* pixels = new uint8_t[width * height * 3];
 	uint8_t samples = 48; // 1D samples, so the actual sample count will be squared
 
-	Camera camera = Camera(height, width, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, -20.0f, focalLength);
+	Camera camera = Camera(height, width, glm::vec3(0.0f, -0.3f, 0.0f), 0.0f, -15.0f, focalLength);
 	
 	spdlog::info("Rendering " + std::to_string(traceables->size()) + " traceables");
 
